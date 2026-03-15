@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+<link rel="apple-touch-icon" href="apple-touch-icon.PNG">
+<link rel="icon" type="image/png" href="apple-touch-icon.PNG">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TRAFIK PRO">
+<meta name="theme-color" content="#07111f">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRAFIK PRO MAX v2.4</title>
+<style>
+:root{
+  --bg:#07111f; --card:#101d33; --line:#22385d; --text:#eef4ff; --muted:#9eb1d8;
+  --accent:#5b8cff; --accent2:#7d5cff; --green:#28c76f; --yellow:#ffb84d; --red:#ff6474; --blue:#56a3ff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  background:
+    radial-gradient(1200px 700px at 5% -10%, rgba(91,140,255,.23), transparent 42%),
+    radial-gradient(1000px 650px at 100% 0%, rgba(125,92,255,.15), transparent 36%),
+    linear-gradient(180deg,var(--bg),#050b16);
+  color:var(--text); min-height:100vh;
+}
+.app{max-width:1380px;margin:0 auto;padding:20px 14px 40px}
+.hero,.card{
+  background:linear-gradient(180deg,rgba(16,29,51,.96),rgba(11,21,38,.97));
+  border:1px solid rgba(255,255,255,.08); border-radius:20px;
+  box-shadow:0 14px 34px rgba(0,0,0,.28);
+}
+.hero{padding:22px 20px;margin-bottom:18px}
+.hero h1{margin:0 0 8px;font-size:34px}
+.hero p{margin:0;color:var(--muted);line-height:1.45}
+.top-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+.card-header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.card-body{padding:18px}
+.row,.two-col,.three-col,.form-grid,.grid-3,.grid-4,.heat-grid,.stats{display:grid;gap:14px}
+.row,.two-col{grid-template-columns:1fr 1fr}
+.three-col{grid-template-columns:1fr 1fr 1fr}
+.form-grid{grid-template-columns:1fr 1fr}
+.grid-3{grid-template-columns:1fr 1fr 1fr}
+.grid-4{grid-template-columns:1fr 1fr 1fr 1fr}
+.heat-grid{grid-template-columns:repeat(4,1fr)}
+.stats{grid-template-columns:repeat(5,1fr);gap:12px}
+.section,.stat,.chart-wrap,.budget-box,.heat-cell{
+  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+  border:1px solid rgba(255,255,255,.06); border-radius:16px; padding:14px;
+}
+.section h3,.chart-head h3{margin:0 0 12px;font-size:16px}
+label{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}
+input{width:100%;padding:12px;border-radius:12px;border:1px solid #2a3c63;background:#0c1527;color:var(--text);font-size:15px;outline:none}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,140,255,.15)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+button{border:0;border-radius:12px;padding:12px 16px;color:white;font-weight:800;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.btn-secondary{background:#203153}.btn-danger{background:linear-gradient(135deg,#ff6b6b,#e63f5b)}.btn-ghost{background:#13203a}.btn-yellow{background:linear-gradient(135deg,#ffb84d,#ff8a3d)}
+.chip,.pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:8px 12px;font-size:13px;font-weight:800;background:#12203b;border:1px solid rgba(255,255,255,.08)}
+.pill{border-radius:10px;padding:8px 10px;font-weight:600}
+.chip.green{background:rgba(40,199,111,.12);color:#a8f2c7;border-color:rgba(40,199,111,.25)}
+.chip.yellow{background:rgba(255,184,77,.12);color:#ffe0a8;border-color:rgba(255,184,77,.25)}
+.chip.red{background:rgba(255,100,116,.12);color:#ffb7c0;border-color:rgba(255,100,116,.25)}
+.chip.blue{background:rgba(86,163,255,.12);color:#b6d8ff;border-color:rgba(86,163,255,.25)}
+.stat .label,.footer-note,.small{color:var(--muted);font-size:13px}
+.stat .value{font-size:22px;font-weight:900}
+.stat .sub{font-size:12px;color:var(--muted);margin-top:6px}
+.table{width:100%;border-collapse:collapse;font-size:14px}
+.table td{padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.table td:last-child{text-align:right;font-weight:800}
+.good{color:#9df0c0}.bad{color:#ffb8c0}.warn{color:#ffe09b}.neutral{color:#d3def9}
+.divider{height:1px;background:var(--line);margin:14px 0}
+.canvas-box{position:relative;width:100%;height:240px} canvas{width:100%;height:100%;display:block}
+.history-list{display:flex;flex-direction:column;gap:12px}
+.history-item{border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px;background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.012))}
+.history-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}
+.history-title{font-size:17px;font-weight:900}
+.history-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.history-actions{display:flex;gap:8px;flex-wrap:wrap}
+.empty{padding:22px;border-radius:18px;border:1px dashed #33466d;text-align:center;color:var(--muted)}
+.heat-cell .h-title{font-size:13px;color:var(--muted);margin-bottom:6px}.heat-cell .h-value{font-size:22px;font-weight:900}
+.heat-cell.green{background:rgba(40,199,111,.12);border-color:rgba(40,199,111,.22)}
+.heat-cell.yellow{background:rgba(255,184,77,.12);border-color:rgba(255,184,77,.22)}
+.heat-cell.red{background:rgba(255,100,116,.12);border-color:rgba(255,100,116,.22)}
+.budget-main{font-size:24px;font-weight:900;margin-bottom:8px}
+@media (max-width:1200px){.top-grid,.grid-3,.grid-4,.three-col,.heat-grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
+@media (max-width:780px){.row,.two-col,.form-grid,.stats{grid-template-columns:1fr}.hero h1{font-size:28px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hero">
+    <h1>TRAFIK PRO MAX v2.4</h1>
+    <p>Фиксированный бюджет 30€/день учитывается как постоянный. Система анализирует не изменение бюджета, а поведение метрик и внутреннее перераспределение Meta между Якорем и Расширителем.</p>
+  </div>
+
+  <div class="top-grid">
+    <section class="card">
+      <div class="card-header">
+        <h2>Ввод данных дня</h2>
+        <span class="chip blue" id="modeChip">Режим: новый день</span>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div>
+            <label for="dayDate">Дата</label>
+            <input id="dayDate" type="date">
+          </div>
+          <div>
+            <label>Статус истории</label>
+            <div class="chip" id="historyStatus">Сохранено дней: 0 / 90</div>
+          </div>
+        </div>
+
+        <div class="form-grid" style="margin-top:14px">
+          <div class="section">
+            <h3>Якорь (Видео A)</h3>
+            <label for="impr_A">Показы</label><input id="impr_A" type="number" inputmode="decimal" min="0" step="1">
+            <label for="reach_A">Охват</label><input id="reach_A" type="number" inputmode="decimal" min="0" step="1">
+            <label for="spend_A">Расход</label><input id="spend_A" type="number" inputmode="decimal" min="0" step="0.01">
+            <label for="clicks_A">Клики</label><input id="clicks_A" type="number" inputmode="decimal" min="0" step="1">
+            <label for="msgs_A">Сообщения</label><input id="msgs_A" type="number" inputmode="decimal" min="0" step="1">
+          </div>
+          <div class="section">
+            <h3>Расширитель (Видео E)</h3>
+            <label for="impr_E">Показы</label><input id="impr_E" type="number" inputmode="decimal" min="0" step="1">
+            <label for="reach_E">Охват</label><input id="reach_E" type="number" inputmode="decimal" min="0" step="1">
+            <label for="spend_E">Расход</label><input id="spend_E" type="number" inputmode="decimal" min="0" step="0.01">
+            <label for="clicks_E">Клики</label><input id="clicks_E" type="number" inputmode="decimal" min="0" step="1">
+            <label for="msgs_E">Сообщения</label><input id="msgs_E" type="number" inputmode="decimal" min="0" step="1">
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="calcBtn">Рассчитать</button>
+          <button class="btn-secondary" id="saveBtn">Сохранить день</button>
+          <button class="btn-ghost" id="clearBtn">Очистить форму</button>
+          <button class="btn-yellow" id="exportBtn">Экспорт JSON</button>
+          <button class="btn-ghost" id="importBtn">Импорт JSON</button>
+          <input id="importFile" type="file" accept=".json" style="display:none">
+        </div>
+
+        <div class="footer-note">Логика подтверждения: день 1 — сигнал, день 2 — сигнал усиливается, день 3 — подтверждён. Для сильных паттернов система может поднимать главный диагноз раньше, чтобы не залипать на D8.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2>Результат диагностики</h2>
+        <span class="chip" id="diagChip">Нет расчёта</span>
+      </div>
+      <div class="card-body">
+        <div class="stats">
+          <div class="stat"><div class="label">Диагноз</div><div class="value" id="diagTitle">—</div><div class="sub">Главный сигнал</div></div>
+          <div class="stat"><div class="label">Статус</div><div class="value" id="statusTitle" style="font-size:18px">—</div><div class="sub">Сигнал / усиливается / подтверждён</div></div>
+          <div class="stat"><div class="label">Действие</div><div class="value" id="actionTitle" style="font-size:18px">—</div><div class="sub">Что делать сейчас</div></div>
+          <div class="stat"><div class="label">Креативы</div><div class="value" id="creativeTitle" style="font-size:18px">—</div><div class="sub">Якорь / Расширитель / оба</div></div>
+          <div class="stat"><div class="label">Режим</div><div class="value" id="modeTitle" style="font-size:18px">—</div><div class="sub">Полный / предварительный</div></div>
+        </div>
+
+        <div style="margin-top:10px" class="footer-note" id="confidenceBox">Confidence: —</div>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div><h3 style="margin:0 0 10px">Итоговые метрики</h3><table class="table" id="metricsTable"></table></div>
+          <div><h3 style="margin:0 0 10px">Активные сигналы</h3><div id="signalsList"></div></div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="two-col">
+          <div><h3 style="margin:0 0 10px">Today vs avg3</h3><table class="table" id="deltaTable"></table></div>
+          <div><h3 style="margin:0 0 10px">Что сравнивалось</h3><div id="avgSourceList"></div><div class="footer-note" id="avgNote">История ещё не использовалась.</div></div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="three-col">
+          <div><h3 style="margin:0 0 10px">Усилители диагноза</h3><div id="boostList"></div></div>
+          <div><h3 style="margin:0 0 10px">Сила диагнозов</h3><table class="table" id="strengthTable"></table></div>
+          <div><h3 style="margin:0 0 10px">Деградация креатива</h3><div id="creativeDegList"></div></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:18px">
+    <div class="card-header"><h2>Тепловая карта метрик</h2><span class="chip">🟢 рост / 🟡 стабильно / 🔴 падение</span></div>
+    <div class="card-body"><div class="heat-grid" id="heatMap"></div></div>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <div class="card-header"><h2>Автоматический совет по бюджету</h2><span class="chip">Фикс 30€/день</span></div>
+    <div class="card-body"><div class="budget-box"><div class="budget-main" id="budgetMain">—</div><div class="footer-note" id="budgetReason">Нет расчёта.</div></div></div>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <div class="card-header"><h2>Прогноз</h2><span class="chip">1–3 дня вперёд</span></div>
+    <div class="card-body">
+      <div class="three-col">
+        <div class="stat"><div class="label">Риск выгорания</div><div class="value" id="forecastBurn" style="font-size:18px">—</div><div class="sub">Creative Burn Index</div></div>
+        <div class="stat"><div class="label">Когда умрёт креатив</div><div class="value" id="forecastBurnDays" style="font-size:18px">—</div><div class="sub">Прогноз</div></div>
+        <div class="stat"><div class="label">Риск аукциона</div><div class="value" id="forecastAuction" style="font-size:18px">—</div><div class="sub">CPM / CPC</div></div>
+      </div>
+      <div class="two-col" style="margin-top:14px">
+        <div class="budget-box"><div class="label">Риск сообщений</div><div id="forecastMsgs" style="font-size:18px;font-weight:900">—</div></div>
+        <div class="budget-box"><div class="label">Итоговый прогноз</div><div id="forecastSummary" style="font-size:16px;font-weight:900">Нет расчёта.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <div class="card-header"><h2>Графики и тренды</h2><span class="chip">CTR / CPC / CPM / CR / Frequency</span></div>
+    <div class="card-body">
+      <div class="grid-3">
+        <div class="chart-wrap"><div class="chart-head"><h3>CTR</h3></div><div class="canvas-box"><canvas id="chartCTR"></canvas></div></div>
+        <div class="chart-wrap"><div class="chart-head"><h3>CPC</h3></div><div class="canvas-box"><canvas id="chartCPC"></canvas></div></div>
+        <div class="chart-wrap"><div class="chart-head"><h3>CPM</h3></div><div class="canvas-box"><canvas id="chartCPM"></canvas></div></div>
+      </div>
+      <div class="grid-4" style="margin-top:16px">
+        <div class="chart-wrap"><div class="chart-head"><h3>CR</h3></div><div class="canvas-box"><canvas id="chartCR"></canvas></div></div>
+        <div class="chart-wrap"><div class="chart-head"><h3>Frequency</h3></div><div class="canvas-box"><canvas id="chartFREQ"></canvas></div></div>
+        <div class="chart-wrap"><div class="chart-head"><h3>Сообщения</h3></div><div class="canvas-box"><canvas id="chartMSGS"></canvas></div></div>
+        <div class="chart-wrap"><div class="chart-head"><h3>Диагнозы по дням</h3></div><div class="canvas-box"><canvas id="chartDIAG"></canvas></div></div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="card" style="margin-top:18px">
+    <div class="card-header"><h2>Управление историей</h2><span class="chip">Очистка по периодам</span></div>
+    <div class="card-body">
+      <div class="actions">
+        <button class="btn-danger" id="clearAllHistoryBtn">Стереть всё</button>
+        <button class="btn-ghost" id="clear7Btn">Стереть 7 дней</button>
+        <button class="btn-ghost" id="clear30Btn">Стереть 30 дней</button>
+        <button class="btn-ghost" id="clear90Btn">Стереть 90 дней</button>
+      </div>
+      <div class="row" style="margin-top:14px">
+        <div>
+          <label for="rangeFrom">С даты</label>
+          <input id="rangeFrom" type="date">
+        </div>
+        <div>
+          <label for="rangeTo">По дату</label>
+          <input id="rangeTo" type="date">
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn-secondary" id="clearRangeBtn">Стереть диапазон</button>
+      </div>
+      <div class="footer-note">Короткая память: последние 10 дней для быстрых сигналов. Длинная память: до 90 дней для baseline и оценки восстановления.</div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <div class="card-header"><h2>История дней</h2><span class="chip">Максимум 90 дней</span></div>
+    <div class="card-body"><div id="historyList" class="history-list"></div></div>
+  </section>
+</div>
+
+<script>
+const STORAGE_KEY = 'trafik_pro_max_v24';
+const MAX_DAYS = 90;
+const RECENT_WINDOW = 10;
+const BASELINE_WINDOW = 90;
+const FIXED_BUDGET = 30;
+let editingDate = null;
+const fields = ['impr_A','reach_A','spend_A','clicks_A','msgs_A','impr_E','reach_E','spend_E','clicks_E','msgs_E'];
+
+function addPill(containerId, text){ const el=document.createElement('span'); el.className='pill'; el.textContent=text; document.getElementById(containerId).appendChild(el); }
+function classifyHeat(val){ if(val === null || val === undefined) return 'yellow'; if(val >= 15) return 'green'; if(val <= -15) return 'red'; return 'yellow'; }
+function todayISO(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function v(id){ const n=Number(document.getElementById(id).value); return Number.isFinite(n) ? n : 0; }
+function setValue(id,value){ document.getElementById(id).value=value ?? ''; }
+function safeDiv(a,b){ return b===0 ? 0 : a/b; }
+function fmtNum(n,digits=0){ if(!Number.isFinite(n)) return '0'; return n.toLocaleString('ru-RU',{minimumFractionDigits:digits,maximumFractionDigits:digits}); }
+function fmtPct(n){ if(n===null || n===undefined || !Number.isFinite(n)) return '—'; return `${n>0?'+':''}${n.toFixed(1)}%`; }
+function formatDateRu(iso){ const [y,m,d]=iso.split('-').map(Number); return new Date(y,m-1,d).toLocaleDateString('ru-RU',{day:'2-digit',month:'short',year:'numeric'}); }
+function loadHistory(){ try{ const raw=localStorage.getItem(STORAGE_KEY); if(!raw) return []; const data=JSON.parse(raw); return Array.isArray(data)?data:[]; }catch(e){ return []; } }
+function saveHistory(history){ localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); refreshHistoryStatus(); renderHistory(); renderCharts(); }
+function sortAsc(arr){ return [...arr].sort((a,b)=>a.date.localeCompare(b.date)); }
+function sortDesc(arr){ return [...arr].sort((a,b)=>b.date.localeCompare(a.date)); }
+function refreshHistoryStatus(){ document.getElementById('historyStatus').textContent=`Сохранено дней: ${loadHistory().length} / ${MAX_DAYS}`; }
+function updateModeChip(){ document.getElementById('modeChip').textContent = editingDate ? `Режим: редактирование ${editingDate}` : 'Режим: новый день'; }
+function collectRaw(){ return {impr_A:v('impr_A'), reach_A:v('reach_A'), spend_A:v('spend_A'), clicks_A:v('clicks_A'), msgs_A:v('msgs_A'), impr_E:v('impr_E'), reach_E:v('reach_E'), spend_E:v('spend_E'), clicks_E:v('clicks_E'), msgs_E:v('msgs_E')}; }
+function derive(raw){
+  const impr_T=raw.impr_A+raw.impr_E, reach_T=raw.reach_A+raw.reach_E, spend_T=raw.spend_A+raw.spend_E, clicks_T=raw.clicks_A+raw.clicks_E, msgs_T=raw.msgs_A+raw.msgs_E;
+  return {...raw, impr_T, reach_T, spend_T, clicks_T, msgs_T,
+    ctr_A:safeDiv(raw.clicks_A,raw.impr_A)*100, ctr_E:safeDiv(raw.clicks_E,raw.impr_E)*100, ctr_T:safeDiv(clicks_T,impr_T)*100,
+    cpc_A:safeDiv(raw.spend_A,raw.clicks_A), cpc_E:safeDiv(raw.spend_E,raw.clicks_E), cpc_T:safeDiv(spend_T,clicks_T),
+    cpm_A:safeDiv(raw.spend_A,raw.impr_A)*1000, cpm_E:safeDiv(raw.spend_E,raw.impr_E)*1000, cpm_T:safeDiv(spend_T,impr_T)*1000,
+    freq_A:safeDiv(raw.impr_A,raw.reach_A), freq_E:safeDiv(raw.impr_E,raw.reach_E), freq_T:safeDiv(impr_T,reach_T),
+    cr_A:safeDiv(raw.msgs_A,raw.clicks_A)*100, cr_E:safeDiv(raw.msgs_E,raw.clicks_E)*100, cr_T:safeDiv(msgs_T,clicks_T)*100,
+    share_A:safeDiv(raw.spend_A,spend_T)*100, share_E:safeDiv(raw.spend_E,spend_T)*100};
+}
+function allDerivedKeys(){ return Object.keys(derive({impr_A:0,reach_A:0,spend_A:0,clicks_A:0,msgs_A:0,impr_E:0,reach_E:0,spend_E:0,clicks_E:0,msgs_E:0})); }
+function avgOfItems(items){ if(!items.length) return null; const avg={}; allDerivedKeys().forEach(k=>avg[k]=items.reduce((sum,it)=>sum+Number(it.derived[k]||0),0)/items.length); return avg; }
+function deltaPct(today,avg){ if(avg===null || avg===undefined || avg===0) return null; return ((today-avg)/avg)*100; }
+function getPrevAvg(date,count){ const prev=sortAsc(loadHistory()).filter(x=>x.date<date).slice(-count); return {avg:avgOfItems(prev), count:prev.length, sourceDates:prev.map(x=>x.date)}; }
+function getPrev3Avg(date){ const x=getPrevAvg(date,3); return {avg3:x.avg,count:x.count,sourceDates:x.sourceDates}; }
+function getBaselineAvg(date){ const prev=sortAsc(loadHistory()).filter(x=>x.date<date).slice(-BASELINE_WINDOW); return {baseline:avgOfItems(prev), count:prev.length, sourceDates:prev.map(x=>x.date)}; }
+function minVolumeOk(d){ return d.clicks_T >= 30 && d.impr_T >= 1000; }
+function dayCoreSignals(derived,avg3){ const d={}; ['ctr_A','ctr_E','ctr_T','cpc_A','cpc_E','cpc_T','cpm_A','cpm_E','cpm_T','freq_A','freq_E','freq_T','reach_A','reach_E','reach_T','clicks_A','clicks_E','clicks_T','msgs_A','msgs_E','msgs_T','cr_A','cr_E','cr_T','spend_A','spend_E','spend_T'].forEach(k=>d[k]=avg3?deltaPct(derived[k],avg3[k]):null); return d; }
+function approxStable(x,t=10){ return Math.abs(x) <= t; }
+
+
+function evaluateDay(date, raw, derived){
+  const avgInfo=getPrev3Avg(date), baseInfo=getBaselineAvg(date);
+  const deltas=avgInfo.avg3 ? dayCoreSignals(derived, avgInfo.avg3) : {};
+  const baselineDeltas={};
+  if(baseInfo.baseline){
+    ['ctr_A','ctr_E','ctr_T','cpc_A','cpc_E','cpc_T','cpm_A','cpm_E','cpm_T','freq_A','freq_E','freq_T','reach_A','reach_E','reach_T','clicks_A','clicks_E','clicks_T','msgs_A','msgs_E','msgs_T','cr_A','cr_E','cr_T','spend_A','spend_E','spend_T']
+      .forEach(k=> baselineDeltas[k]=deltaPct(derived[k], baseInfo.baseline[k]));
+  }
+
+  const scores={}; ['D1','D2','D3','D4','D5','D6','D7','D8'].forEach(code=>scores[code]={score:0,reasons:[],primary:false});
+  const boosts=[];
+  const flags={anchorDegToday:false,creativeDegA:false,creativeDegE:false,overheatA:false,overheatE:false,funnelProblem:false,budgetHoldCandidate:false};
+  const forecast={burnRisk:'Нет данных', burnDays:'—', auctionRisk:'Нет данных', msgRisk:'Нет данных', summary:'Недостаточно данных для прогноза.', audienceFatigue:'Нет', whatToChange:'Оставить креативы'};
+
+  if(!minVolumeOk(derived)){
+    scores.D8.score=100; scores.D8.reasons.push('Недостаточный объём данных');
+    return finalizeEvaluation(date, derived, deltas, baselineDeltas, avgInfo, baseInfo, boosts, scores, flags, forecast);
+  }
+  if(!(avgInfo.avg3 && avgInfo.count >= 3)){
+    scores.D8.score += 20; scores.D8.reasons.push('Недостаточно 3 предыдущих дней');
+    forecast.summary='Для прогноза нужно минимум 3 предыдущих дня.';
+    return finalizeEvaluation(date, derived, deltas, baselineDeltas, avgInfo, baseInfo, boosts, scores, flags, forecast);
+  }
+
+  function hit(code, primary, secCount){
+    if(primary){
+      scores[code].primary=true;
+      scores[code].score += ({D1:55,D2:58,D3:58,D4:56,D5:57,D6:60,D7:54})[code] || 50;
+      scores[code].reasons.push(`Primary ${code}`);
+      if(secCount >= 1){ scores[code].score += 12; scores[code].reasons.push(`Secondary ${code}`); }
+      if(secCount >= 2) scores[code].score += 8;
+      if(secCount >= 3) scores[code].score += 5;
+    }
+  }
+
+  let s=0;
+  s=(deltas.clicks_T>=10)+(deltas.reach_T>=10)+(derived.freq_T<=2.5);
+  hit('D1', deltas.ctr_T>=0 && deltas.cpc_T<=0 && deltas.cpm_T<=0 && deltas.cr_T>=0 && deltas.msgs_T>=0, s);
+
+  s=(deltas.reach_T<=-15)+(deltas.clicks_T<=-15)+(approxStable(deltas.freq_T,10));
+  hit('D2', deltas.cpm_T>=8 && deltas.cpc_T>=10 && deltas.reach_T<=-10, s);
+
+  s=(deltas.reach_T<=-15)+(deltas.clicks_T<=-20)+(approxStable(deltas.cpm_T,10));
+  hit('D3', derived.freq_T>=2.3 && deltas.ctr_T<=-18 && deltas.cpc_T>=15, s);
+
+  s=(deltas.reach_T>=20)+(deltas.clicks_T<=-25)+(derived.freq_T<=1.5);
+  hit('D4', deltas.ctr_T<=-30 && deltas.cpc_T>=30 && deltas.cpm_T<=-10, s);
+
+  s=(deltas.clicks_T<=-30)+(approxStable(deltas.reach_T,10))+(derived.freq_T<=2.0);
+  hit('D5', deltas.ctr_T<=-20 && deltas.cpc_T>=15 && approxStable(deltas.cpm_T,15), s);
+
+  s=(deltas.cpc_T<=0)+(approxStable(deltas.cpm_T,10))+(approxStable(deltas.freq_T,10));
+  hit('D6', deltas.ctr_T>=0 && deltas.clicks_T>=0 && deltas.cr_T<=-40 && deltas.msgs_T<=-40, s);
+
+  const shareShiftA = avgInfo.avg3 ? Math.abs(deltaPct(derived.share_A, avgInfo.avg3.share_A)) : 0;
+  const shareShiftE = avgInfo.avg3 ? Math.abs(deltaPct(derived.share_E, avgInfo.avg3.share_E)) : 0;
+  const shareShiftMax = Math.max(shareShiftA || 0, shareShiftE || 0);
+  const qualityStableForD7 =
+    approxStable(deltas.ctr_T,15) &&
+    approxStable(deltas.cpc_T,15) &&
+    approxStable(deltas.cpm_T,15) &&
+    approxStable(deltas.cr_T,18);
+  const weakCreativePenalty =
+    ((derived.share_A < 20) && ((deltas.ctr_A ?? 0) <= -20 || (deltas.cpc_A ?? 0) >= 20)) ||
+    ((derived.share_E < 20) && ((deltas.ctr_E ?? 0) <= -20 || (deltas.cpc_E ?? 0) >= 20));
+  s=(shareShiftMax>=20)+(qualityStableForD7)+(approxStable(deltas.msgs_T,18));
+  hit('D7',
+    shareShiftMax >= 20 &&
+    qualityStableForD7 &&
+    !scores.D2.primary && !scores.D3.primary && !scores.D5.primary && !scores.D6.primary &&
+    !weakCreativePenalty,
+    s
+  );
+
+  if(approxStable(deltas.ctr_T,10) && approxStable(deltas.cpc_T,10) && approxStable(deltas.cpm_T,10) && approxStable(deltas.clicks_T,12) && approxStable(deltas.msgs_T,12) && approxStable(deltas.freq_T,8) && approxStable(deltas.reach_T,12)){
+    scores.D8.score += 45; scores.D8.reasons.push('Нормальное колебание');
+  }
+
+  flags.anchorDegToday = (deltas.ctr_A <= -25 && derived.freq_A >= 2.8 && deltas.cpc_A >= 25);
+  flags.creativeDegA = (deltas.ctr_A <= -15 && deltas.cpc_A >= 15 && deltas.freq_A >= 10);
+  flags.creativeDegE = (deltas.ctr_E <= -15 && deltas.cpc_E >= 15 && deltas.freq_E >= 10);
+  flags.overheatA = (derived.freq_A >= 2.8 && deltas.ctr_A <= -25);
+  flags.overheatE = (derived.freq_E >= 2.8 && deltas.ctr_E <= -25);
+  flags.funnelProblem = scores.D6.primary;
+
+  if(flags.anchorDegToday){ scores.D3.score += 18; scores.D3.reasons.push('Деградация якоря сегодня'); }
+  if(deltas.cpm_T >= 30 && approxStable(deltas.ctr_T,10) && deltas.cpc_T >= 20 && deltas.reach_T <= -15){ scores.D2.score += 14; boosts.push('Отдельное правило аукциона'); }
+  if(flags.funnelProblem){ boosts.push('Обнаружен паттерн проблемы воронки / переписки'); }
+  const budgetDominanceA = derived.share_A >= 80;
+  const budgetDominanceE = derived.share_E >= 80;
+  const weakCreativeAlmostOff =
+    ((derived.share_A <= 20) && ((deltas.ctr_A ?? 0) <= -15 || (deltas.cpc_A ?? 0) >= 15)) ||
+    ((derived.share_E <= 20) && ((deltas.ctr_E ?? 0) <= -15 || (deltas.cpc_E ?? 0) >= 15));
+  if(scores.D7.primary){
+    boosts.push(`D7: доля бюджета сместилась. A ${derived.share_A.toFixed(0)}% / E ${derived.share_E.toFixed(0)}%`);
+  }
+
+  const history=sortAsc(loadHistory());
+  const prev1=history.filter(x=>x.date<date).slice(-1)[0];
+  const prev2=history.filter(x=>x.date<date).slice(-2)[0];
+
+  ['D1','D2','D3','D4','D5','D6','D7'].forEach(code=>{
+    const t=scores[code].primary, y1=prev1?.analysis?.primaryHits?.[code] || false, y2=prev2?.analysis?.primaryHits?.[code] || false;
+    if(t && y1 && y2){ scores[code].score += 30; scores[code].reasons.push('Подтверждение 3 дня подряд'); boosts.push(`${code}: подтверждён больше 2 дней подряд`); }
+    else if(t && y1){ scores[code].score += 14; scores[code].reasons.push('2-й день сигнала'); boosts.push(`${code}: сигнал усиливается`); }
+    else if(t){ boosts.push(`${code}: первый день сигнала`); }
+  });
+
+  const withToday=[...history,{date,derived}].sort((a,b)=>a.date.localeCompare(b.date));
+  if(withToday.length >= 3){
+    const idx=withToday.findIndex(x=>x.date===date);
+    if(idx >= 2){
+      const a=withToday[idx-2].derived, b=withToday[idx-1].derived, c=withToday[idx].derived;
+      const down3=k => b[k] < a[k] && c[k] < b[k];
+      const up3=k => b[k] > a[k] && c[k] > b[k];
+      if(down3('ctr_T') && up3('cpc_T')){ scores.D5.score += 12; boosts.push('Тренд 3 дней: CTR вниз, CPC вверх'); }
+      if(up3('cpm_T') && approxStable(deltas.ctr_T,10)){ scores.D2.score += 12; boosts.push('Тренд 3 дней: CPM растёт'); }
+      if(down3('ctr_T') && up3('cpc_T') && up3('freq_T')){ scores.D3.score += 16; boosts.push('Тренд 3 дней: деградация креатива'); }
+    }
+  }
+
+  // Long-memory baseline support (up to 90 days)
+  if(baseInfo.baseline && baseInfo.count >= 3){
+    if(baselineDeltas.cpm_T >= 10){ scores.D2.score += 14; boosts.push('D2: плохая зона vs baseline'); }
+    if(baselineDeltas.ctr_T <= -12 && baselineDeltas.cpc_T >= 10){ scores.D3.score += 14; boosts.push('D3: плохая зона vs baseline'); }
+    if(baselineDeltas.ctr_T <= -15){ scores.D5.score += 10; boosts.push('D5: плохая зона vs baseline'); }
+    if(baselineDeltas.cr_T <= -20 && baselineDeltas.msgs_T <= -20){ scores.D6.score += 12; boosts.push('D6: плохая зона vs 90-дневный baseline'); }
+  }
+
+  flags.budgetHoldCandidate = !!(flags.overheatA || flags.overheatE || deltas.freq_T >= 15 || scores.D2.score > 0 || scores.D3.score > 0 || scores.D5.score > 0);
+
+  const burnScore = Math.max(0,-(deltas.ctr_T||0)) + Math.max(0,(deltas.cpc_T||0)) + Math.max(0,(deltas.freq_T||0)) + Math.max(0,-(deltas.msgs_T||0));
+  if(burnScore > 150){ forecast.burnRisk='Очень высокий'; forecast.burnDays='≈ 1 день'; }
+  else if(burnScore > 100){ forecast.burnRisk='Высокий'; forecast.burnDays='≈ 2 дня'; }
+  else if(burnScore > 70){ forecast.burnRisk='Средний'; forecast.burnDays='≈ 3 дня'; }
+  else { forecast.burnRisk='Низкий'; forecast.burnDays='Пока стабилен'; }
+
+  forecast.auctionRisk = (deltas.cpm_T >= 20 && deltas.cpc_T >= 15) ? 'Риск усиления давления аукциона в 1–2 дня' : 'Сильного риска аукциона пока нет';
+  forecast.msgRisk = (deltas.msgs_T <= -20 || deltas.cr_T <= -20) ? 'Есть риск дальнейшего падения сообщений в 1–2 дня' : 'Пока без выраженного риска падения сообщений';
+  forecast.audienceFatigue = (deltas.freq_T > 15 && deltas.reach_T < -10 && deltas.ctr_T < -10) ? 'Да' : 'Нет';
+
+  if(deltas.ctr_A < -20 && deltas.msgs_A < -20 && !(deltas.ctr_E < -20 && deltas.msgs_E < -20)) forecast.whatToChange='Обновить Якорь';
+  else if(deltas.ctr_E < -20 && deltas.msgs_E < -20 && !(deltas.ctr_A < -20 && deltas.msgs_A < -20)) forecast.whatToChange='Обновить Расширитель';
+  else if(deltas.ctr_A < -20 && deltas.ctr_E < -20) forecast.whatToChange='Обновить оба креатива';
+  else forecast.whatToChange='Пока не менять';
+
+  return finalizeEvaluation(date, derived, deltas, baselineDeltas, avgInfo, baseInfo, boosts, scores, flags, forecast, burnScore);
+}
+
+
+
+
+function decideCreativeAction(finalCode,statusLabel,derived,deltas,flags,forecast){
+
+  let actionLevel = "🟡 Наблюдать";
+
+  if(statusLabel === "Сигнал усиливается"){
+      actionLevel = "🟠 Подготовить изменение";
+  }
+  if(statusLabel === "Подтверждён" || statusLabel === "Сильный тренд"){
+      actionLevel = "🔴 Действовать";
+  }
+  if(finalCode === "D1" && (statusLabel === "Подтверждён" || statusLabel === "Сильный тренд" || statusLabel === "Восстановлен")){
+      actionLevel = "🟢 Масштабировать";
+  }
+
+  let creativeDecision = "Не менять";
+
+  if(finalCode === "D3"){
+      if(statusLabel === "Сигнал") creativeDecision = "Наблюдать";
+      else if(statusLabel === "Сигнал усиливается") creativeDecision = "Подготовить новый креатив";
+      else creativeDecision = "Менять креатив";
+  }
+  else if(finalCode === "D5"){
+      if(statusLabel === "Сигнал") creativeDecision = "Наблюдать";
+      else if(statusLabel === "Сигнал усиливается") creativeDecision = "Подготовить новый хук";
+      else creativeDecision = "Менять креатив";
+  }
+  else if(finalCode === "D6"){
+      creativeDecision = (statusLabel === "Подтверждён" || statusLabel === "Сильный тренд") ? "Исправлять воронку" : "Проверить воронку";
+  }
+  else if(finalCode === "D2"){
+      creativeDecision = "Наблюдать аукцион";
+  }
+  else if(finalCode === "D7"){
+      if((derived.share_A <= 20 && ((deltas.ctr_A ?? 0) <= -15 || (deltas.cpc_A ?? 0) >= 15)) ||
+         (derived.share_E <= 20 && ((deltas.ctr_E ?? 0) <= -15 || (deltas.cpc_E ?? 0) >= 15))){
+         creativeDecision = "Подготовить замену слабого креатива";
+      } else if(derived.share_A >= 80 || derived.share_E >= 80){
+         creativeDecision = "Оставить победителя, слабый наблюдать";
+      } else {
+         creativeDecision = "Ничего не менять 2–3 дня";
+      }
+  }
+  else if(finalCode === "D1"){
+      creativeDecision = "Оставить оба";
+  }
+  else if(finalCode === "D4"){
+      creativeDecision = (statusLabel === "Подтверждён" || statusLabel === "Сильный тренд") ? "Обновить подачу / хук" : "Наблюдать";
+  }
+
+  return actionLevel + " — " + creativeDecision;
+}
+function finalizeEvaluation(date, derived, deltas, baselineDeltas, avgInfo, baseInfo, boosts, scores, flags, forecast, burnScore){
+  const priority=['D3','D2','D6','D5','D4','D7','D1','D8'];
+  const meta={
+    D1:{title:'Зона силы', action:'Оставить как есть', color:'green'},
+    D2:{title:'Давление аукциона', action:'Наблюдать аукцион, не менять бюджет', color:'yellow'},
+    D3:{title:'Перегрев креатива', action:'Обновить креатив', color:'red'},
+    D4:{title:'Холодная аудитория', action:'Обновить подачу / хук', color:'yellow'},
+    D5:{title:'Проблема хука', action:'Переписать первые секунды видео', color:'yellow'},
+    D6:{title:'Проблема воронки', action:'Проверить переписку / оффер', color:'yellow'},
+    D7:{title:'Перераспределение бюджета', action:'Ничего не менять', color:'blue'},
+    D8:{title:'Шум', action:'Наблюдать', color:'yellow'}
+  };
+
+  let strongestCode='D8', bestScore=-1;
+  for(const code of priority){ if(scores[code].score > bestScore){ bestScore=scores[code].score; strongestCode=code; } }
+
+  const history=sortAsc(loadHistory());
+  const prev1=history.filter(x=>x.date<date).slice(-1)[0];
+  const prev2=history.filter(x=>x.date<date).slice(-2)[0];
+  const prevDiag=prev1?.diagnosis?.code || prev1?.analysis?.code || 'D8';
+
+  const inBadZone = {
+    D2: (((baselineDeltas.cpm_T ?? 0) >= 12) || ((deltas.cpm_T ?? 0) >= 15)) && (((baselineDeltas.cpc_T ?? 0) >= 8) || ((deltas.cpc_T ?? 0) >= 10)),
+    D3: ((((baselineDeltas.ctr_T ?? 0) <= -12) || ((deltas.ctr_T ?? 0) <= -15)) && (((baselineDeltas.cpc_T ?? 0) >= 10) || ((deltas.cpc_T ?? 0) >= 12) || ((baselineDeltas.freq_T ?? 0) >= 8) || ((deltas.freq_T ?? 0) >= 10))),
+    D4: (((baselineDeltas.ctr_T ?? 0) <= -12) || ((deltas.ctr_T ?? 0) <= -15)) && (((baselineDeltas.cpm_T ?? 0) <= -3) || ((deltas.cpm_T ?? 0) <= -5)),
+    D5: (((baselineDeltas.ctr_T ?? 0) <= -15) || ((deltas.ctr_T ?? 0) <= -18)) && (((baselineDeltas.cpc_T ?? 0) >= 12) || ((deltas.cpc_T ?? 0) >= 15)),
+    D6: (((baselineDeltas.cr_T ?? 0) <= -12) || ((deltas.cr_T ?? 0) <= -15)) && (((baselineDeltas.msgs_T ?? 0) <= -12) || ((deltas.msgs_T ?? 0) <= -15)),
+    D7: false
+  };
+
+  const recoveredToStrength =
+    baseInfo.baseline && baseInfo.count >= 14 &&
+    (baselineDeltas.ctr_T ?? 0) >= -5 &&
+    (baselineDeltas.cpc_T ?? 0) <= 5 &&
+    (baselineDeltas.cpm_T ?? 0) <= 5 &&
+    (baselineDeltas.cr_T ?? 0) >= -5 &&
+    (baselineDeltas.msgs_T ?? 0) >= -5;
+
+  let finalCode='D8', statusLabel='Шум', statusColor='yellow';
+  let confidence = 40;
+
+  if(strongestCode !== 'D8'){
+    const currentPrimary=scores[strongestCode].primary || false;
+    const y1Primary=prev1?.analysis?.primaryHits?.[strongestCode] || false;
+    const y2Primary=prev2?.analysis?.primaryHits?.[strongestCode] || false;
+    const has3DayConfirm=currentPrimary && y1Primary && y2Primary;
+    const has2DayConfirm=currentPrimary && y1Primary;
+    const strongScore=scores[strongestCode].score >= 80;
+    const mediumScore=scores[strongestCode].score >= 55;
+
+    if(has3DayConfirm){ finalCode=strongestCode; statusLabel='Подтверждён'; statusColor=meta[strongestCode].color; }
+    else if(has2DayConfirm && strongScore){ finalCode=strongestCode; statusLabel='Сигнал усиливается'; statusColor=meta[strongestCode].color; }
+    else if(currentPrimary && mediumScore){ finalCode=strongestCode; statusLabel='Сигнал'; statusColor=meta[strongestCode].color; }
+    else if(scores[strongestCode].score >= 95){ finalCode=strongestCode; statusLabel='Сильный тренд'; statusColor=meta[strongestCode].color; }
+  }
+
+  // Hold bad tendency: if current day no longer worsens, but still remains below healthy 90-day baseline
+  if(finalCode === 'D8' && prevDiag !== 'D8' && prevDiag !== 'D1' && !recoveredToStrength && inBadZone[prevDiag]){
+    finalCode = prevDiag;
+    statusLabel = 'Удерживается';
+    statusColor = meta[prevDiag].color;
+    boosts.unshift(`${prevDiag}: плохая динамика продолжается, шум не включён`);
+  }
+
+  // Recovery to strength only after real return to healthy scale
+  if(prevDiag !== 'D8' && prevDiag !== 'D1' && recoveredToStrength){
+    finalCode = 'D1';
+    statusLabel = 'Восстановлен';
+    statusColor = meta.D1.color;
+    boosts.unshift('Метрики вернулись к здоровой шкале baseline');
+  }
+
+  function getActionText(code,status){
+    if(code === 'D1'){
+      if(status === 'Подтверждён' || status === 'Сильный тренд' || status === 'Восстановлен') return 'Можно увеличить бюджет на 10–20%';
+      return 'Наблюдать и не мешать алгоритму';
+    }
+    if(code === 'D2'){
+      if(status === 'Подтверждён' || status === 'Сильный тренд') return 'Наблюдать 2–3 дня; бюджет не менять';
+      return 'Наблюдать аукцион, не менять бюджет';
+    }
+    if(code === 'D3'){
+      if(status === 'Сигнал усиливается') return 'Подготовить новый креатив';
+      if(status === 'Подтверждён' || status === 'Сильный тренд') return 'Менять креатив';
+      return 'Наблюдать';
+    }
+    if(code === 'D4'){
+      if(status === 'Подтверждён' || status === 'Сильный тренд') return 'Обновить подачу / хук';
+      return 'Наблюдать';
+    }
+    if(code === 'D5'){
+      if(status === 'Сигнал усиливается') return 'Подготовить новый хук';
+      if(status === 'Подтверждён' || status === 'Сильный тренд') return 'Менять креатив';
+      return 'Наблюдать';
+    }
+    if(code === 'D6'){
+      if(status === 'Подтверждён' || status === 'Сильный тренд') return 'Исправлять воронку';
+      return 'Проверить воронку / оффер';
+    }
+    if(code === 'D7'){
+      return 'Ничего не менять, наблюдать 2–3 дня';
+    }
+    return 'Наблюдать';
+  }
+
+  if(statusLabel === 'Сигнал') confidence = Math.min(68, Math.max(52, Math.round(bestScore * 0.85)));
+  else if(statusLabel === 'Сигнал усиливается') confidence = Math.min(78, Math.max(65, Math.round(bestScore * 0.9)));
+  else if(statusLabel === 'Подтверждён' || statusLabel === 'Сильный тренд') confidence = Math.min(95, Math.max(82, Math.round(bestScore * 0.95)));
+  else if(statusLabel === 'Удерживается') confidence = 78;
+  else if(statusLabel === 'Восстановлен') confidence = 88;
+  else confidence = Math.min(55, Math.max(40, Math.round(bestScore * 0.7)));
+
+  const actionText = getActionText(finalCode, statusLabel);
+  const creativeDecision=decideCreativeAction(finalCode,statusLabel,derived,deltas,flags,forecast);
+  let budgetMain='Бюджет фиксирован 30€/день';
+  let budgetReason='Meta сама перераспределяет бюджет между Якорем и Расширителем. Меняем не бюджет, а креативы.';
+  if(finalCode === 'D1'){ budgetMain='Оставить фикс 30€/день'; budgetReason='Сигнал силы. Meta сама распределяет бюджет нормально.'; }
+  else if(finalCode === 'D2'){ budgetMain='Не повышать бюджет'; budgetReason='Давление аукциона. При фиксированном 30€/день менять лучше креатив, а не бюджет.'; }
+  else if(finalCode === 'D3' || finalCode === 'D5'){ budgetMain='Не увеличивать бюджет'; budgetReason='Есть перегрев / деградация. При фиксированном бюджете 30€ готовить замену креатива.'; }
+  else if(finalCode === 'D6'){ budgetMain='Бюджет не трогать'; budgetReason='Проблема не в бюджете, а в воронке / оффере / переписке.'; }
+
+  const activeSignals = finalCode === 'D8' ? (boosts.length ? boosts : ['Совпадений по приоритету нет']) : [...scores[finalCode].reasons, ...boosts.slice(0,4)];
+  const mode=avgInfo.count >= 3 ? 'Полный' : 'Предварительный';
+
+  const diagnosisForecastMap={
+    D1:'Система стабилизировалась на уровне здоровой шкалы. Можно считать восстановлением.',
+    D2:'Если давление аукциона сохранится, CPC и CPM останутся высокими ещё 1–2 дня.',
+    D3:`Риск выгорания: ${forecast.burnRisk}. Смерть креатива: ${forecast.burnDays}.`,
+    D4:'Ожидается слабый отклик холодной аудитории. Нужен более сильный хук.',
+    D5:'Проблема первых секунд. Если не обновить хук, CTR продолжит падать.',
+    D6:'Сообщения продолжат падать, если не исправить оффер / переписку.',
+    D7:'Meta перераспределяет показы внутри фиксированного бюджета. Креативы можно не менять.',
+    D8:'Явного устойчивого сигнала пока нет.'
+  };
+  if(statusLabel === 'Удерживается'){
+    forecast.summary = 'Плохая динамика продолжается: система удерживает диагноз, потому что метрики остаются ниже здоровой 90-дневной шкалы.';
+  } else {
+    forecast.summary = diagnosisForecastMap[finalCode] || forecast.summary;
+  }
+
+  return {
+    code:finalCode,
+    rawCandidateCode:strongestCode,
+    title:meta[finalCode].title,
+    action:actionText,
+    color:statusColor,
+    activeSignals,
+    deltas,
+    baselineDeltas,
+    mode,
+    note:avgInfo.count >= 3 ? `avg3 взят по датам: ${avgInfo.sourceDates.map(formatDateRu).join(', ')}` : `Для полного сигнала нужно 3 предыдущих дня. Сейчас: ${avgInfo.count}.`,
+    sourceDates:avgInfo.sourceDates,
+    boosts,
+    scores,
+    primaryHits:Object.fromEntries(Object.keys(scores).map(code=>[code,scores[code].primary])),
+    flags,
+    creativeDecision,
+    statusLabel,
+    statusColor,
+    budgetMain,
+    budgetReason,
+    forecast,
+    burnScore,
+    confidence
+  };
+}
+
+
+function calculateCurrent(){ const date=document.getElementById('dayDate').value || todayISO(); const raw=collectRaw(); const derived=derive(raw); const analysis=evaluateDay(date,raw,derived); renderResult({date,raw,derived,analysis}); return {date,raw,derived,analysis}; }
+function renderHeatMap(deltas){ const heat=document.getElementById('heatMap'); heat.innerHTML=''; [['CTR',deltas.ctr_T],['CPC',deltas.cpc_T],['CPM',deltas.cpm_T],['Reach',deltas.reach_T],['Clicks',deltas.clicks_T],['Messages',deltas.msgs_T],['CR',deltas.cr_T],['Frequency',deltas.freq_T]].forEach(([name,val])=>{ const div=document.createElement('div'); div.className=`heat-cell ${classifyHeat(val)}`; div.innerHTML=`<div class="h-title">${name}</div><div class="h-value">${fmtPct(val)}</div>`; heat.appendChild(div); }); }
+function renderCreativeDeg(flags){ const box=document.getElementById('creativeDegList'); box.innerHTML=''; const items=[]; if(flags.anchorDegToday) items.push('Якорь: жёсткая деградация'); if(flags.creativeDegA) items.push('Якорь: ранняя деградация'); if(flags.creativeDegE) items.push('Расширитель: ранняя деградация'); if(flags.overheatA) items.push('Якорь: признаки перегрева'); if(flags.overheatE) items.push('Расширитель: признаки перегрева'); if(flags.funnelProblem) items.push('Проблема воронки / переписки'); if(!items.length) items.push('Явной деградации не обнаружено'); items.forEach(text=>addPill('creativeDegList',text)); }
+function renderBudget(analysis){ document.getElementById('budgetMain').textContent=analysis.budgetMain; document.getElementById('budgetReason').textContent=analysis.budgetReason; }
+function renderForecast(analysis){ document.getElementById('forecastBurn').textContent=analysis.forecast?.burnRisk || 'Нет данных'; document.getElementById('forecastBurnDays').textContent=analysis.forecast?.burnDays || '—'; document.getElementById('forecastAuction').textContent=analysis.forecast?.auctionRisk || 'Нет данных'; document.getElementById('forecastMsgs').textContent=analysis.forecast?.msgRisk || 'Нет данных'; document.getElementById('forecastSummary').textContent=analysis.forecast?.summary || 'Нет данных'; }
+function renderResult(payload){
+  const {derived,analysis}=payload;
+  const chip=document.getElementById('diagChip'); chip.className=`chip ${analysis.color}`; chip.textContent=`${analysis.code} — ${analysis.title}`;
+  document.getElementById('diagTitle').textContent=`${analysis.code} — ${analysis.title}`;
+  document.getElementById('statusTitle').textContent=analysis.statusLabel;
+  document.getElementById('actionTitle').textContent=analysis.action;
+  document.getElementById('creativeTitle').textContent=analysis.creativeDecision;
+  document.getElementById('modeTitle').textContent=analysis.mode;
+  document.getElementById('confidenceBox').textContent=`Confidence: ${analysis.confidence ?? '—'}%`;
+  document.getElementById('metricsTable').innerHTML=`<tr><td>CTR A</td><td>${derived.ctr_A.toFixed(2)}%</td></tr><tr><td>CTR E</td><td>${derived.ctr_E.toFixed(2)}%</td></tr><tr><td>CTR Итого</td><td>${derived.ctr_T.toFixed(2)}%</td></tr><tr><td>CPC Итого</td><td>${derived.cpc_T.toFixed(2)}</td></tr><tr><td>CPM Итого</td><td>${derived.cpm_T.toFixed(2)}</td></tr><tr><td>CR Итого</td><td>${derived.cr_T.toFixed(2)}%</td></tr><tr><td>Частота A</td><td>${derived.freq_A.toFixed(2)}</td></tr><tr><td>Частота E</td><td>${derived.freq_E.toFixed(2)}</td></tr><tr><td>Частота Итого</td><td>${derived.freq_T.toFixed(2)}</td></tr><tr><td>Сообщения Итого</td><td>${fmtNum(derived.msgs_T)}</td></tr>`;
+  document.getElementById('signalsList').innerHTML=''; analysis.activeSignals.forEach(text=>addPill('signalsList',text));
+  const rows=[['CTR_T','ctr_T'],['CPC_T','cpc_T'],['CPM_T','cpm_T'],['Reach_T','reach_T'],['Clicks_T','clicks_T'],['Msgs_T','msgs_T'],['CR_T','cr_T'],['Spend_T','spend_T'],['CTR_A','ctr_A'],['CTR_E','ctr_E'],['Reach_A','reach_A'],['Reach_E','reach_E'],['Freq_T','freq_T']];
+  document.getElementById('deltaTable').innerHTML=rows.map(([label,key])=>{ const d=analysis.deltas?.[key]; let cls='neutral'; if(d!==null && d!==undefined){ if(d<=-15) cls='bad'; else if(d>=15) cls='good'; else cls='warn'; } return `<tr><td>${label}</td><td class="${cls}">${fmtPct(d)}</td></tr>`; }).join('');
+  document.getElementById('avgSourceList').innerHTML=''; if(analysis.sourceDates?.length) analysis.sourceDates.forEach(date=>addPill('avgSourceList',formatDateRu(date))); else addPill('avgSourceList','Нет трёх предыдущих дней');
+  document.getElementById('avgNote').textContent=analysis.note;
+  document.getElementById('boostList').innerHTML=''; if(analysis.boosts.length) analysis.boosts.forEach(text=>addPill('boostList',text)); else addPill('boostList','Усилителей нет');
+  document.getElementById('strengthTable').innerHTML=['D3','D2','D6','D5','D4','D7','D1','D8'].map(code=>`<tr><td>${code}</td><td>${analysis.scores[code].score}</td></tr>`).join('');
+  renderCreativeDeg(analysis.flags); renderHeatMap(analysis.deltas); renderBudget(analysis); renderForecast(analysis);
+}
+
+function saveCurrentDay(){
+  const date=document.getElementById('dayDate').value; if(!date){ alert('Сначала выберите дату.'); return; }
+  const payload=calculateCurrent(); let history=loadHistory(); const idx=history.findIndex(x=>x.date===date);
+  if(idx !== -1 && editingDate === null){ const ok=confirm('День с этой датой уже есть. Обновить существующий день?'); if(!ok) return; }
+  const record={ date, raw:payload.raw, derived:payload.derived, diagnosis:{ code:payload.analysis.code, title:payload.analysis.title, action:payload.analysis.action, color:payload.analysis.color, creativeDecision:payload.analysis.creativeDecision, mode:payload.analysis.mode, statusLabel:payload.analysis.statusLabel }, analysis:payload.analysis }; persistDiagnosis(payload.analysis.code);
+  if(idx !== -1) history.splice(idx,1,record); else history.push(record);
+  history=sortAsc(history).slice(-MAX_DAYS); saveHistory(history); editingDate=null; updateModeChip(); showSavedRecord(record); alert('День сохранён.');
+}
+function clearForm(){ document.getElementById('dayDate').value=todayISO(); fields.forEach(id=>setValue(id,'')); editingDate=null; updateModeChip(); document.getElementById('diagChip').className='chip'; document.getElementById('diagChip').textContent='Нет расчёта'; ['diagTitle','statusTitle','actionTitle','creativeTitle','modeTitle'].forEach(id=>document.getElementById(id).textContent='—'); ['metricsTable','signalsList','deltaTable','avgSourceList','boostList','strengthTable','creativeDegList','heatMap'].forEach(id=>document.getElementById(id).innerHTML=''); document.getElementById('avgNote').textContent='История ещё не использовалась.'; document.getElementById('budgetMain').textContent='—'; document.getElementById('budgetReason').textContent='Нет расчёта.'; document.getElementById('forecastBurn').textContent='—'; document.getElementById('forecastBurnDays').textContent='—'; document.getElementById('forecastAuction').textContent='—'; document.getElementById('forecastMsgs').textContent='—'; document.getElementById('forecastSummary').textContent='Нет расчёта.'; }
+function showSavedRecord(item){
+  if(!item || !item.analysis) return;
+  document.getElementById('dayDate').value=item.date || todayISO();
+  fields.forEach(id=>setValue(id,item.raw?.[id] ?? ''));
+  renderResult({date:item.date, raw:item.raw, derived:item.derived, analysis:item.analysis});
+}
+function restoreLastResult(){
+  const history=sortAsc(loadHistory());
+  if(!history.length) return;
+  const last=history[history.length-1];
+  showSavedRecord(last);
+}
+
+function loadIntoForm(date){ const item=loadHistory().find(x=>x.date===date); if(!item) return; document.getElementById('dayDate').value=item.date; fields.forEach(id=>setValue(id,item.raw[id])); editingDate=item.date; updateModeChip(); calculateCurrent(); window.scrollTo({top:0,behavior:'smooth'}); }
+function deleteDay(date){ const ok=confirm(`Удалить день ${formatDateRu(date)}?`); if(!ok) return; let history=loadHistory().filter(x=>x.date!==date); saveHistory(history); if(editingDate===date){ editingDate=null; updateModeChip(); } restoreLastResult(); }
+
+function clearAllHistory(){
+  const ok=confirm('Стереть всю историю?');
+  if(!ok) return;
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem('trafik_last_diag');
+  localStorage.removeItem('trafik_diag_count');
+  refreshHistoryStatus(); renderHistory(); renderCharts(); clearForm();
+}
+function clearLastDays(days){
+  const ok=confirm(`Стереть последние ${days} дней?`);
+  if(!ok) return;
+  let history=sortAsc(loadHistory());
+  history = history.slice(0, Math.max(0, history.length - days));
+  saveHistory(history);
+  restoreLastResult();
+}
+function clearRange(){
+  const from=document.getElementById('rangeFrom').value;
+  const to=document.getElementById('rangeTo').value;
+  if(!from || !to){ alert('Выберите диапазон дат.'); return; }
+  const ok=confirm(`Стереть историю с ${from} по ${to}?`);
+  if(!ok) return;
+  let history=loadHistory().filter(x => !(x.date >= from && x.date <= to));
+  saveHistory(sortAsc(history));
+  restoreLastResult();
+}
+
+function renderHistory(){ const list=document.getElementById('historyList'); const history=sortDesc(loadHistory()); if(!history.length){ list.innerHTML='<div class="empty">История пока пустая. Сохраните первый день.</div>'; return; } list.innerHTML=''; history.forEach(item=>{ const div=document.createElement('div'); div.className='history-item'; div.innerHTML=`<div class="history-top"><div><div class="history-title">${formatDateRu(item.date)}</div><div class="history-meta"><span class="chip ${item.diagnosis.color || 'yellow'}">${item.diagnosis.code} — ${item.diagnosis.title}</span><span class="chip">${item.diagnosis.statusLabel || '—'}</span><span class="chip">${item.diagnosis.action}</span><span class="chip">${item.diagnosis.creativeDecision || '—'}</span></div></div><div class="history-actions"><button class="btn-ghost small" data-edit="${item.date}">Изменить</button><button class="btn-danger small" data-del="${item.date}">Удалить</button></div></div><div class="two-col"><div><table class="table"><tr><td>Якорь — показы</td><td>${fmtNum(item.raw.impr_A)}</td></tr><tr><td>Якорь — охват</td><td>${fmtNum(item.raw.reach_A)}</td></tr><tr><td>Якорь — расход</td><td>${fmtNum(item.raw.spend_A,2)}</td></tr><tr><td>Якорь — клики</td><td>${fmtNum(item.raw.clicks_A)}</td></tr><tr><td>Якорь — сообщения</td><td>${fmtNum(item.raw.msgs_A)}</td></tr></table></div><div><table class="table"><tr><td>Расширитель — показы</td><td>${fmtNum(item.raw.impr_E)}</td></tr><tr><td>Расширитель — охват</td><td>${fmtNum(item.raw.reach_E)}</td></tr><tr><td>Расширитель — расход</td><td>${fmtNum(item.raw.spend_E,2)}</td></tr><tr><td>Расширитель — клики</td><td>${fmtNum(item.raw.clicks_E)}</td></tr><tr><td>Расширитель — сообщения</td><td>${fmtNum(item.raw.msgs_E)}</td></tr></table></div></div>`; list.appendChild(div); }); list.querySelectorAll('[data-edit]').forEach(btn=>btn.addEventListener('click',()=>loadIntoForm(btn.dataset.edit))); list.querySelectorAll('[data-del]').forEach(btn=>btn.addEventListener('click',()=>deleteDay(btn.dataset.del))); }
+function exportJSON(){ const blob=new Blob([JSON.stringify(loadHistory(),null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='trafik_pro_backup_v24.json'; a.click(); URL.revokeObjectURL(a.href); }
+function importJSON(file){ const reader=new FileReader(); reader.onload=e=>{ try{ const data=JSON.parse(e.target.result); if(!Array.isArray(data)) throw new Error(); localStorage.setItem(STORAGE_KEY,JSON.stringify(data)); refreshHistoryStatus(); renderHistory(); renderCharts(); alert('Импорт выполнен.'); }catch(err){ alert('Не удалось импортировать JSON.'); } }; reader.readAsText(file,'UTF-8'); }
+function resizeCanvas(canvas){ const rect=canvas.getBoundingClientRect(); canvas.width=Math.max(300, rect.width*devicePixelRatio); canvas.height=Math.max(180, rect.height*devicePixelRatio); }
+function drawLineChart(canvasId,series,labels){ const canvas=document.getElementById(canvasId); if(!canvas) return; resizeCanvas(canvas); const ctx=canvas.getContext('2d'), w=canvas.width, h=canvas.height; ctx.clearRect(0,0,w,h); const padL=50*devicePixelRatio,padR=20*devicePixelRatio,padT=22*devicePixelRatio,padB=36*devicePixelRatio,chartW=w-padL-padR,chartH=h-padT-padB; const allVals=series.flatMap(s=>s.values); if(!allVals.length){ ctx.fillStyle='#9eb1d8'; ctx.font=`${14*devicePixelRatio}px Arial`; ctx.fillText('Недостаточно данных',20*devicePixelRatio,50*devicePixelRatio); return; } let min=Math.min(...allVals), max=Math.max(...allVals); if(min===max){ min=0; max=max||1; } const padRange=(max-min)*0.12 || 1; min-=padRange; max+=padRange; const xPos=(i,total)=> total<=1 ? padL+chartW/2 : padL+(chartW/(total-1))*i, yPos=v=>padT+chartH-((v-min)/(max-min))*chartH; ctx.strokeStyle='rgba(255,255,255,.08)'; ctx.lineWidth=1*devicePixelRatio; for(let i=0;i<4;i++){ const y=padT+(chartH/3)*i; ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(padL+chartW,y); ctx.stroke(); } ctx.fillStyle='#9eb1d8'; ctx.font=`${12*devicePixelRatio}px Arial`; ctx.fillText(max.toFixed(2),6*devicePixelRatio,padT+8*devicePixelRatio); ctx.fillText(((max+min)/2).toFixed(2),6*devicePixelRatio,padT+chartH/2); ctx.fillText(min.toFixed(2),6*devicePixelRatio,padT+chartH); series.forEach(s=>{ ctx.strokeStyle=s.color; ctx.lineWidth=2.5*devicePixelRatio; ctx.beginPath(); s.values.forEach((v,i)=>{ const x=xPos(i,s.values.length), y=yPos(v); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }); ctx.stroke(); s.values.forEach((v,i)=>{ const x=xPos(i,s.values.length), y=yPos(v); ctx.fillStyle=s.color; ctx.beginPath(); ctx.arc(x,y,3.2*devicePixelRatio,0,Math.PI*2); ctx.fill(); }); }); ctx.fillStyle='#9eb1d8'; ctx.font=`${11*devicePixelRatio}px Arial`; labels.forEach((lab,i)=>{ const x=xPos(i,labels.length); ctx.fillText(lab,x-14*devicePixelRatio,h-12*devicePixelRatio); }); }
+function drawDiagChart(canvasId,history){ const canvas=document.getElementById(canvasId); if(!canvas) return; resizeCanvas(canvas); const ctx=canvas.getContext('2d'), w=canvas.width, h=canvas.height; ctx.clearRect(0,0,w,h); if(!history.length){ ctx.fillStyle='#9eb1d8'; ctx.font=`${14*devicePixelRatio}px Arial`; ctx.fillText('Нет данных',20*devicePixelRatio,40*devicePixelRatio); return; } const pad=22*devicePixelRatio,gap=12*devicePixelRatio,areaW=w-pad*2,areaH=h-pad*2,barW=(areaW-gap*(history.length-1))/history.length; const scoreMap={D1:1,D2:2,D3:3,D4:4,D5:5,D6:6,D7:7,D8:8}, colorMap={D1:'#28c76f',D2:'#ffb84d',D3:'#ff6474',D4:'#ffb84d',D5:'#ffb84d',D6:'#ffb84d',D7:'#56a3ff',D8:'#8aa0cb'}; history.forEach((item,i)=>{ const score=scoreMap[item.diagnosis.code]||8, x=pad+i*(barW+gap), y=pad+((score-1)/7)*areaH, barH=h-pad-y; ctx.fillStyle=colorMap[item.diagnosis.code]||'#8aa0cb'; ctx.fillRect(x,y,barW,barH); ctx.fillStyle='#dce8ff'; ctx.font=`${11*devicePixelRatio}px Arial`; ctx.fillText(item.diagnosis.code,x,y-6*devicePixelRatio); ctx.fillText(item.date.slice(5),x,h-8*devicePixelRatio); }); }
+function renderCharts(){ const history=sortAsc(loadHistory()), labels=history.map(x=>x.date.slice(5)); drawLineChart('chartCTR',[{name:'A',color:'#5b8cff',values:history.map(x=>x.derived.ctr_A)},{name:'E',color:'#7d5cff',values:history.map(x=>x.derived.ctr_E)},{name:'T',color:'#28c76f',values:history.map(x=>x.derived.ctr_T)}],labels); drawLineChart('chartCPC',[{name:'A',color:'#5b8cff',values:history.map(x=>x.derived.cpc_A)},{name:'E',color:'#7d5cff',values:history.map(x=>x.derived.cpc_E)},{name:'T',color:'#28c76f',values:history.map(x=>x.derived.cpc_T)}],labels); drawLineChart('chartCPM',[{name:'A',color:'#5b8cff',values:history.map(x=>x.derived.cpm_A)},{name:'E',color:'#7d5cff',values:history.map(x=>x.derived.cpm_E)},{name:'T',color:'#28c76f',values:history.map(x=>x.derived.cpm_T)}],labels); drawLineChart('chartCR',[{name:'A',color:'#5b8cff',values:history.map(x=>x.derived.cr_A)},{name:'E',color:'#7d5cff',values:history.map(x=>x.derived.cr_E)},{name:'T',color:'#28c76f',values:history.map(x=>x.derived.cr_T)}],labels); drawLineChart('chartFREQ',[{name:'A',color:'#5b8cff',values:history.map(x=>x.derived.freq_A)},{name:'E',color:'#7d5cff',values:history.map(x=>x.derived.freq_E)},{name:'T',color:'#28c76f',values:history.map(x=>x.derived.freq_T)}],labels); drawLineChart('chartMSGS',[{name:'T',color:'#ffb84d',values:history.map(x=>x.derived.msgs_T)}],labels); drawDiagChart('chartDIAG',history); }
+
+document.getElementById('calcBtn').addEventListener('click', calculateCurrent);
+document.getElementById('saveBtn').addEventListener('click', saveCurrentDay);
+document.getElementById('clearBtn').addEventListener('click', clearForm);
+document.getElementById('exportBtn').addEventListener('click', exportJSON);
+document.getElementById('importBtn').addEventListener('click', ()=>document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change', e=>{ const file=e.target.files[0]; if(file) importJSON(file); e.target.value=''; });
+
+const clearAllHistoryBtn=document.getElementById('clearAllHistoryBtn');
+if(clearAllHistoryBtn){
+  clearAllHistoryBtn.addEventListener('click', clearAllHistory);
+  document.getElementById('clear7Btn').addEventListener('click', ()=>clearLastDays(7));
+  document.getElementById('clear30Btn').addEventListener('click', ()=>clearLastDays(30));
+  document.getElementById('clear90Btn').addEventListener('click', ()=>clearLastDays(90));
+  document.getElementById('clearRangeBtn').addEventListener('click', clearRange);
+}
+
+window.addEventListener('resize', renderCharts);
+document.getElementById('dayDate').value=todayISO(); refreshHistoryStatus(); updateModeChip(); renderHistory(); renderCharts(); restoreLastResult();
+</script>
+
+<script>
+// --- Trend persistence layer ---
+let lastDiag = localStorage.getItem("trafik_last_diag") || "D8";
+let lastCount = parseInt(localStorage.getItem("trafik_diag_count") || "0");
+
+function persistDiagnosis(diag){
+  if(diag === lastDiag){
+     lastCount += 1;
+  } else {
+     lastDiag = diag;
+     lastCount = 1;
+  }
+  localStorage.setItem("trafik_last_diag", lastDiag);
+  localStorage.setItem("trafik_diag_count", lastCount);
+}
+
+function getTrendLabel(){
+  if(lastCount >= 3){
+     return "Trend confirmed (" + lastDiag + " for " + lastCount + " days)";
+  }
+  return "Collecting trend data…";
+}
+</script>
+
+</body>
+</html>
