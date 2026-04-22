@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TRAFIK PRO MAX</title>
+  <style>
+    :root{
+      --bg:#0f1115; --panel:#171b22; --panel2:#1f2530; --text:#f3f5f7; --muted:#a7b0be;
+      --line:#2b3442; --good:#1fbf75; --warn:#f0b429; --bad:#ea5455; --blue:#4da3ff;
+      --chip:#11161d;
+    }
+    *{box-sizing:border-box}
+    body{margin:0; background:var(--bg); color:var(--text); font:14px/1.45 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif; -webkit-text-size-adjust:100%}
+    .wrap{max-width:1400px; margin:0 auto; padding:18px}
+    h1,h2,h3{margin:0 0 10px}
+    h1{font-size:28px}
+    h2{font-size:18px; color:#fff}
+    h3{font-size:15px; color:#fff}
+    .sub{color:var(--muted); margin:0 0 14px}
+    .grid{display:grid; gap:16px}
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    @media (max-width:1100px){.grid-4,.grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media (max-width:760px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+    .card{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px}
+    .card.soft{background:linear-gradient(180deg,var(--panel),var(--panel2))}
+    .toolbar{display:flex; flex-wrap:wrap; gap:10px; margin:10px 0 18px}
+    button,.btn,label.filebtn{
+      border:1px solid var(--line); background:var(--panel2); color:var(--text); padding:10px 12px; border-radius:12px;
+      cursor:pointer; font-weight:600;
+    }
+    button:hover,.btn:hover,label.filebtn:hover{filter:brightness(1.08)}
+    input,select,textarea{
+      width:100%; border:1px solid var(--line); background:#0d1218; color:var(--text); padding:14px 14px; border-radius:16px; outline:none; font-size:18px; min-height:56px;
+    }
+    input[type=number]{-moz-appearance:textfield}
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none; margin:0}
+    textarea{min-height:92px; resize:vertical}
+    .row{display:grid; grid-template-columns:170px 1fr; gap:10px; align-items:center; margin:8px 0}
+    .minirow{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .label{color:var(--muted)}
+    .pill{display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:999px; background:var(--chip); border:1px solid var(--line); font-weight:700}
+    .pill.good{color:var(--good)} .pill.warn{color:var(--warn)} .pill.bad{color:var(--bad)} .pill.blue{color:var(--blue)}
+    .kpi{display:flex; flex-direction:column; gap:6px; padding:12px; border-radius:14px; background:#10151c; border:1px solid var(--line)}
+    .kpi .v{font-size:22px; font-weight:800}
+    .kpi .t{color:var(--muted); font-size:12px}
+    .sep{height:1px; background:var(--line); margin:12px 0}
+    table{width:100%; border-collapse:collapse}
+    th,td{padding:9px 8px; border-bottom:1px solid var(--line); text-align:right; white-space:nowrap}
+    th:first-child,td:first-child{text-align:left}
+    th{color:var(--muted); font-weight:600; position:sticky; top:0; background:var(--panel)}
+    .table-wrap{overflow:auto; max-height:460px}
+    .diag{display:flex; flex-wrap:wrap; gap:10px}
+    .diag-card{flex:1 1 260px; padding:14px; border-radius:14px; border:1px solid var(--line); background:#10151c}
+    .diag-card.active{outline:2px solid rgba(77,163,255,.35)}
+    .small{font-size:12px; color:var(--muted)}
+    .right{display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap}
+    .muted{color:var(--muted)}
+    canvas{width:100%; height:260px; background:#0e131a; border:1px solid var(--line); border-radius:12px}
+    .badge{display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:700; border:1px solid var(--line); background:#0f141b}
+    .goodText{color:var(--good)} .warnText{color:var(--warn)} .badText{color:var(--bad)} .blueText{color:var(--blue)}
+    .foot{color:var(--muted); margin-top:8px; font-size:12px}
+    .title-row{display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap}
+    .danger{background:#2a1516; border-color:#5a2426}
+    .success{background:#102117; border-color:#21492f}
+    .notice{padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:#10151c; margin-top:8px}
+    input[type=file]{display:none}
+
+    @media (max-width:760px){
+      .wrap{padding:14px}
+      h1{font-size:24px}
+      h2{font-size:17px}
+      h3{font-size:14px}
+      .small{font-size:13px}
+      input,select,textarea{font-size:22px; min-height:64px; padding:16px 16px}
+      button,.btn,label.filebtn{min-height:50px; font-size:16px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="title-row">
+      <div>
+        <h1>TRAFIK PRO MAX</h1>
+        <p class="sub">Анализ Meta Ads по 2 креативам: <b>A — Якорь</b>, <b>E — Расширитель</b>. История до 90 дней, avg3, delta %, диагнозы D1–D8, confidence, прогноз, графики.</p>
+      </div>
+      <div class="pill blue">Бюджет: 30€ фиксированный</div>
+    </div>
+
+    <div class="toolbar">
+      <button id="saveDayBtn">Сохранить день</button>
+      <button id="resetInputsBtn">Очистить ввод</button>
+      <button id="exportCsvBtn">Экспорт CSV</button>
+      <label class="filebtn" for="csvFile">Импорт CSV</label>
+      <input type="file" id="csvFile" accept=".csv" />
+      <button id="undoBtn">Удалить последний день</button>
+      <button id="clearAllBtn" class="danger">Очистить всю историю</button>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card soft">
+        <h2>Ввод данных за день</h2>
+        <div class="row">
+          <div class="label">Дата</div>
+          <input id="dayDate" type="date" />
+        </div>
+
+        <div class="sep"></div>
+        <h3>Якорь (A)</h3>
+        <div class="grid grid-4">
+          <div><div class="small">Показы</div><input id="impr_A" type="number" min="0" step="1" value="0" inputmode="numeric" pattern="[0-9]*"></div>
+          <div><div class="small">Охват</div><input id="reach_A" type="number" min="0" step="1" value="0" inputmode="numeric" pattern="[0-9]*"></div>
+          <div><div class="small">Расход (€)</div><input id="spend_A" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div>
+          <div><div class="small">Клики</div><input id="clicks_A" type="number" min="0" step="1" value="0" inputmode="numeric" pattern="[0-9]*"></div>
+        </div>
+        <div class="minirow" style="margin-top:10px">
+          <div><div class="small">Сообщения</div><input id="msgs_A" type="number" min="0" step="1" value="0" inputmode="numeric" pattern="[0-9]*"></div>
+          <div class="notice"><b>Важно:</b> если у Вас есть только Расширитель, оставьте A = 0.</div>
+        </div>
+
+        <div class="sep"></div>
+        <h3>Расширитель (E)</h3>
+        <div class="grid grid-4">
+          <div><div class="small">Показы</div><input id="impr_E" type="number" min="0" step="1" value="0" inputmode="numeric" pattern="[0-9]*"></div>
+          <div><div class="small">Охват</div><input id="reach_E" type="number" min="0" step="1" value="0" inputmode="numeric" pattern="[0-9]*"></div>
+          <div><div class="small">Расход (€)</div><input id="spend_E" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div>
+          <div><div class="small">Клики</div><input id="clicks_E" type="number" min="0" step="1" value="0" inputmode="numeric" pattern="[0-9]*"></div>
+        </div>
+        <div style="margin-top:10px; max-width:240px"><div class="small">Сообщения</div><input id="msgs_E" type="number" min="0" step="1" value="0" inputmode="numeric" pattern="[0-9]*"></div>
+      </div>
+
+      <div class="card">
+        <h2>Сводка по последнему дню</h2>
+        <div id="summaryLatest" class="muted">Добавьте хотя бы один день данных.</div>
+        <div class="sep"></div>
+        <h3>Финальный диагноз</h3>
+        <div id="finalDiagnosis"></div>
+        <div class="sep"></div>
+        <h3>Рекомендация</h3>
+        <div id="finalAction" class="muted"></div>
+        <div class="sep"></div>
+        <h3>Прогноз на 1–3 дня</h3>
+        <div id="forecastBox" class="muted"></div>
+      </div>
+    </div>
+
+    <div class="grid grid-4" style="margin-top:16px">
+      <div class="kpi"><div class="t">Дней в истории</div><div class="v" id="kpiDays">0</div></div>
+      <div class="kpi"><div class="t">Последний Confidence</div><div class="v" id="kpiConfidence">—</div></div>
+      <div class="kpi"><div class="t">Статус сигнала</div><div class="v" id="kpiSignal">—</div></div>
+      <div class="kpi"><div class="t">Текущий диагноз</div><div class="v" id="kpiDiag">—</div></div>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:16px">
+      <div class="card">
+        <h2>График: CTR (%)</h2>
+        <canvas id="chartCTR" width="650" height="260"></canvas>
+      </div>
+      <div class="card">
+        <h2>График: Сообщения</h2>
+        <canvas id="chartMsgs" width="650" height="260"></canvas>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h2>Диагностика D1–D8</h2>
+      <div id="diagGrid" class="diag"></div>
+      <div class="foot">Пороги: 10% — стабильно, 15% — допустимо, 20% — сигнал, 30% — сильный сигнал. Приоритет: D3 &gt; D2 &gt; D6 &gt; D5 &gt; D4 &gt; D7 &gt; D1 &gt; D8.</div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="title-row">
+        <div>
+          <h2>История дней</h2>
+          <div class="small">CSV поддерживает: реакция, доставка, сборка дней.</div>
+        </div>
+        <div class="right">
+          <span class="badge">localStorage</span>
+          <span class="badge">макс 90 дней</span>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="historyTable">
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th>Impr A</th><th>Reach A</th><th>Spend A</th><th>Clicks A</th><th>Msgs A</th>
+              <th>Impr E</th><th>Reach E</th><th>Spend E</th><th>Clicks E</th><th>Msgs E</th>
+              <th>Diag</th><th>Conf.</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'trafik_pro_max_v1';
+  const MAX_DAYS = 90;
+  const PRIORITY = ['D3','D2','D6','D5','D4','D7','D1','D8'];
+  const DIAG_INFO = {
+    D1:{name:'Зона силы', tone:'good', action:'Не трогать связку резко. Сохраняйте креатив и бюджет, наблюдайте 2–3 дня. Если рост держится — можно аккуратно масштабировать.'},
+    D2:{name:'Давление аукциона', tone:'warn', action:'Проверьте рост CPM и падение эффективности. Подготовьте свежий визуал/первый кадр, не ломая оффер. Следите за охватом и частотой.'},
+    D3:{name:'Перегрев креатива', tone:'bad', action:'Меняйте креатив в первую очередь. Если это Якорь — готовьте новый Anchor. Если это Расширитель — обновляйте вход и угол подачи.'},
+    D4:{name:'Холодная аудитория', tone:'warn', action:'Креатив доходит до новой, более холодной аудитории. Усильте ясность, доверие, комментарии, первые секунды и понятность обещания.'},
+    D5:{name:'Проблема хука', tone:'bad', action:'Первые 2–3 секунды не цепляют. Меняйте начало видео, заголовок, первую фразу, визуальный вход. Оффер пока не трогайте.'},
+    D6:{name:'Проблема воронки', tone:'bad', action:'Клик есть, а сообщений мало. Усильте путь после клика: понятность, доверие, CTA, скорость ответа, текст в объявлении и в сообщениях.'},
+    D7:{name:'Перераспределение бюджета', tone:'blue', action:'Система вливает бюджет туда, где видит лучший отклик. Не паникуйте 1 день. Наблюдайте 2–3 дня, затем решайте, нужен ли новый Расширитель.'},
+    D8:{name:'Шум', tone:'blue', action:'Пока рано делать выводы. Нужны ещё данные. Смотрите на 3-дневное подтверждение, а не на один день.'}
+  };
+
+  const state = loadState();
+  const els = {};
+  [
+    'dayDate','impr_A','reach_A','spend_A','clicks_A','msgs_A','impr_E','reach_E','spend_E','clicks_E','msgs_E',
+    'saveDayBtn','resetInputsBtn','exportCsvBtn','csvFile','undoBtn','clearAllBtn','summaryLatest','finalDiagnosis','finalAction','forecastBox',
+    'kpiDays','kpiConfidence','kpiSignal','kpiDiag','diagGrid','historyTable','chartCTR','chartMsgs'
+  ].forEach(id => els[id] = document.getElementById(id));
+
+  init();
+
+  function init(){
+    els.dayDate.value = todayISO();
+    bind();
+    renderAll();
+  }
+
+  function bind(){
+    els.saveDayBtn.addEventListener('click', saveDay);
+    els.resetInputsBtn.addEventListener('click', clearInputs);
+    els.exportCsvBtn.addEventListener('click', exportCsv);
+    els.csvFile.addEventListener('change', importCsv);
+    els.undoBtn.addEventListener('click', undoLastDay);
+    els.clearAllBtn.addEventListener('click', clearAll);
+  }
+
+  function saveDay(){
+    const day = {
+      date: els.dayDate.value || todayISO(),
+      A: readSet('A'),
+      E: readSet('E')
+    };
+
+    if (!hasAnyData(day)) {
+      alert('Введите хотя бы одно ненулевое значение.');
+      return;
+    }
+
+    day.derived = deriveAll(day);
+    day.analysis = analyzeDay(day, state.days);
+
+    const existingIndex = state.days.findIndex(d => d.date === day.date);
+    if (existingIndex >= 0) state.days[existingIndex] = day;
+    else state.days.push(day);
+
+    state.days.sort((a,b)=>a.date.localeCompare(b.date));
+    if (state.days.length > MAX_DAYS) state.days = state.days.slice(-MAX_DAYS);
+
+    recomputeAllAnalyses();
+    persist();
+    renderAll();
+  }
+
+  function clearInputs(){
+    ['impr_A','reach_A','spend_A','clicks_A','msgs_A','impr_E','reach_E','spend_E','clicks_E','msgs_E'].forEach(id => els[id].value = 0);
+    els.dayDate.value = todayISO();
+  }
+
+  function undoLastDay(){
+    if (!state.days.length) return alert('История пустая.');
+    if (!confirm('Удалить последний день?')) return;
+    state.days.pop();
+    recomputeAllAnalyses();
+    persist();
+    renderAll();
+  }
+
+  function clearAll(){
+    if (!confirm('Очистить всю историю? Это удалит все сохранённые дни.')) return;
+    state.days = [];
+    persist();
+    renderAll();
+  }
+
+  function readSet(letter){
+    return {
+      impr: num(els['impr_'+letter].value),
+      reach: num(els['reach_'+letter].value),
+      spend: num(els['spend_'+letter].value),
+      clicks: num(els['clicks_'+letter].value),
+      msgs: num(els['msgs_'+letter].value)
+    };
+  }
+
+  function hasAnyData(day){
+    const v = [...Object.values(day.A), ...Object.values(day.E)];
+    return v.some(x => Number(x) > 0);
+  }
+
+  function deriveSet(s){
+    return {
+      ctr: safeDiv(s.clicks, s.impr) * 100,
+      cpc: safeDiv(s.spend, s.clicks),
+      cpm: safeDiv(s.spend, s.impr) * 1000,
+      freq: safeDiv(s.impr, s.reach),
+      cr: safeDiv(s.msgs, s.clicks) * 100
+    };
+  }
+
+  function deriveAll(day){
+    return {
+      A: deriveSet(day.A),
+      E: deriveSet(day.E),
+      total: deriveSet({
+        impr: day.A.impr + day.E.impr,
+        reach: day.A.reach + day.E.reach,
+        spend: day.A.spend + day.E.spend,
+        clicks: day.A.clicks + day.E.clicks,
+        msgs: day.A.msgs + day.E.msgs
+      })
+    };
+  }
+
+  function analyzeDay(day, allDays){
+    const prevDays = allDays.filter(d => d.date < day.date).slice(-3);
+    const avg3 = computeAvg3(prevDays);
+    const deltas = computeDeltas(day, avg3);
+    const diag = detectDiagnosis(day, avg3, deltas, prevDays);
+    return { avg3, deltas, ...diag };
+  }
+
+  function recomputeAllAnalyses(){
+    state.days.sort((a,b)=>a.date.localeCompare(b.date));
+    const rebuilt = [];
+    for (const day of state.days){
+      if (!day.derived) day.derived = deriveAll(day);
+      day.analysis = analyzeDay(day, rebuilt);
+      rebuilt.push(day);
+    }
+    state.days = rebuilt;
+  }
+
+  function computeAvg3(prevDays){
+    const paths = [
+      'A.impr','A.reach','A.spend','A.clicks','A.msgs',
+      'E.impr','E.reach','E.spend','E.clicks','E.msgs',
+      'derived.A.ctr','derived.A.cpc','derived.A.cpm','derived.A.freq','derived.A.cr',
+      'derived.E.ctr','derived.E.cpc','derived.E.cpm','derived.E.freq','derived.E.cr',
+      'derived.total.ctr','derived.total.cpc','derived.total.cpm','derived.total.freq','derived.total.cr'
+    ];
+    const out = {};
+    for (const p of paths){
+      out[p] = prevDays.length ? avg(prevDays.map(d => getPath(d,p))) : 0;
+    }
+    return out;
+  }
+
+  function computeDeltas(day, avg3){
+    const paths = Object.keys(avg3);
+    const out = {};
+    for (const p of paths){
+      const today = getPath(day, p);
+      const base = avg3[p];
+      out[p] = deltaPct(today, base);
+    }
+    return out;
+  }
+
+  function detectDiagnosis(day, avg3, deltas, prevDays){
+    const daysCount = prevDays.length;
+    const total = day.derived.total;
+    const a = day.derived.A;
+    const e = day.derived.E;
+    const sig = {
+      dCpm: deltas['derived.total.cpm'],
+      dCtr: deltas['derived.total.ctr'],
+      dCr: deltas['derived.total.cr'],
+      dMsgsA: deltas['A.msgs'],
+      dMsgsE: deltas['E.msgs'],
+      dClicksA: deltas['A.clicks'],
+      dClicksE: deltas['E.clicks'],
+      dFreq: deltas['derived.total.freq'],
+      dReachA: deltas['A.reach'],
+      dReachE: deltas['E.reach'],
+      dSpendA: deltas['A.spend'],
+      dSpendE: deltas['E.spend'],
+      dCpc: deltas['derived.total.cpc']
+    };
+
+    const strong = x => x >= 30;
+    const signal = x => x >= 20;
+    const negSignal = x => x <= -20;
+    const negStrong = x => x <= -30;
+
+    const scores = {D1:0,D2:0,D3:0,D4:0,D5:0,D6:0,D7:0,D8:1};
+    const reasons = {D1:[],D2:[],D3:[],D4:[],D5:[],D6:[],D7:[],D8:['Недостаточно подтверждённых признаков для сильного вывода.']};
+
+    if (signal(sig.dCpm) && negSignal(sig.dCtr)) { scores.D2 += 3; reasons.D2.push('CPM растёт, CTR падает.'); }
+    if (strong(sig.dCpm) && negStrong(sig.dCr)) { scores.D2 += 2; reasons.D2.push('Рост CPM уже давит на конверсию.'); }
+
+    if (signal(sig.dFreq) && negSignal(sig.dCtr)) { scores.D3 += 2; reasons.D3.push('Частота растёт, CTR падает.'); }
+    if (signal(sig.dFreq) && (negSignal(sig.dMsgsA) || negSignal(sig.dMsgsE))) { scores.D3 += 2; reasons.D3.push('Частота растёт, сообщений становится меньше.'); }
+    if ((day.A.impr > 0 || day.E.impr > 0) && total.freq >= 2.5 && negSignal(sig.dCtr)) { scores.D3 += 2; reasons.D3.push('Частота уже высокая для текущей реакции.'); }
+
+    if (negSignal(sig.dCr) && !negSignal(sig.dCtr)) { scores.D6 += 3; reasons.D6.push('Клики держатся, а сообщения проседают.'); }
+    if (signal(sig.dCpc) && negSignal(sig.dCr)) { scores.D6 += 1; reasons.D6.push('Цена за клик/конверсия указывают на проблему после клика.'); }
+
+    if (negSignal(sig.dCtr) && !signal(sig.dCpm)) { scores.D5 += 3; reasons.D5.push('CTR падает без выраженного аукционного давления.'); }
+    if ((negSignal(sig.dClicksA) || negSignal(sig.dClicksE)) && !negSignal(sig.dCr)) { scores.D5 += 1; reasons.D5.push('Просели клики, но конверсия из клика ещё держится.'); }
+
+    if ((signal(sig.dReachA) || signal(sig.dReachE)) && signal(sig.dCpm) && negSignal(sig.dCr)) { scores.D4 += 3; reasons.D4.push('Охват расширяется в более холодную аудиторию.'); }
+    if ((signal(sig.dReachA) || signal(sig.dReachE)) && negSignal(sig.dCtr)) { scores.D4 += 1; reasons.D4.push('Новая аудитория реагирует слабее.'); }
+
+    if ((negStrong(sig.dSpendE) && negStrong(sig.dMsgsE) && day.E.spend < day.A.spend) || (negStrong(sig.dSpendA) && negStrong(sig.dMsgsA) && day.A.spend < day.E.spend)) {
+      scores.D7 += 3; reasons.D7.push('Бюджет заметно ушёл в другой креатив.');
+    }
+    if ((negSignal(sig.dSpendE) && day.E.spend === 0 && day.A.spend > 0) || (negSignal(sig.dSpendA) && day.A.spend === 0 && day.E.spend > 0)) {
+      scores.D7 += 2; reasons.D7.push('Один из креативов фактически перестал получать бюджет.');
+    }
+
+    if ((signal(deltas['derived.total.ctr']) || strong(deltas['derived.total.cr'])) && !signal(sig.dCpm) && (day.A.msgs + day.E.msgs) > 0) {
+      scores.D1 += 3; reasons.D1.push('CTR/CR растут без давления по CPM.');
+    }
+    if ((day.A.msgs + day.E.msgs) > avg3['A.msgs'] + avg3['E.msgs'] && total.cpc > 0 && !signal(sig.dFreq)) {
+      scores.D1 += 2; reasons.D1.push('Сообщений больше при контролируемой частоте.');
+    }
+
+    if (daysCount < 3) {
+      scores.D8 += 2;
+      reasons.D8.push('Меньше 3 предыдущих дней: вывод пока предварительный.');
+    }
+
+    const ranked = PRIORITY.map(code => ({code, score:scores[code], reasons:reasons[code]})).sort((a,b)=>{
+      if (b.score !== a.score) return b.score - a.score;
+      return PRIORITY.indexOf(a.code) - PRIORITY.indexOf(b.code);
+    });
+
+    const best = ranked[0].score > 0 ? ranked[0].code : 'D8';
+    const previousSame = countPreviousSame(best, prevDays);
+    const stageNum = previousSame + 1;
+    const stageLabel = stageNum >= 3 ? 'подтверждён' : stageNum === 2 ? 'усиливается' : 'сигнал';
+
+    const confidenceRaw = Math.min(95, Math.max(35, ranked[0].score * 18 + (stageNum-1)*12 + Math.min(daysCount,3)*5));
+    const confidence = Math.round(confidenceRaw);
+
+    return {
+      scores,
+      reasons,
+      best,
+      stage: stageLabel,
+      stageNum,
+      confidence,
+      action: DIAG_INFO[best].action,
+      forecast: buildForecast(day, deltas, best),
+      ranked
+    };
+  }
+
+  function countPreviousSame(code, prevDays){
+    let count = 0;
+    for (let i = prevDays.length - 1; i >= 0; i--) {
+      const d = prevDays[i];
+      if (d.analysis && d.analysis.best === code) count++;
+      else break;
+    }
+    return count;
+  }
+
+  function buildForecast(day, deltas, best){
+    const totalMsgs = day.A.msgs + day.E.msgs;
+    const msgTrend = deltas['A.msgs'] + deltas['E.msgs'];
+    const ctrTrend = deltas['derived.total.ctr'];
+    let text = '';
+    if (best === 'D3') text = 'Если ничего не менять, креатив может заметно просесть в течение 1–3 дней.';
+    else if (best === 'D2') text = 'Если давление аукциона сохранится, CPM останется высоким, а стоимость реакции может ухудшиться в ближайшие 1–3 дня.';
+    else if (best === 'D6') text = 'Клики ещё могут идти, но сообщения рискуют продолжить снижение, если не исправить путь после клика.';
+    else if (best === 'D5') text = 'Без смены хука CTR, вероятно, останется под давлением ещё 1–3 дня.';
+    else if (best === 'D1') text = 'При сохранении текущей подачи связка может оставаться сильной ближайшие 1–3 дня.';
+    else if (best === 'D7') text = 'Система, вероятно, продолжит отдавать приоритет более сильному креативу в ближайшие 1–3 дня.';
+    else text = 'Нужны ещё данные, чтобы прогноз стал жёстче.';
+
+    const projMsgs = Math.max(0, Math.round(totalMsgs * (1 + clamp(msgTrend/200, -0.4, 0.4))));
+    const projCtr = Math.max(0, day.derived.total.ctr * (1 + clamp(ctrTrend/200, -0.4, 0.4)));
+    return `${text} Примерная траектория на завтра: CTR ≈ ${fmt(projCtr,2)}%, сообщения ≈ ${projMsgs}.`;
+  }
+
+  function renderAll(){
+    const days = state.days;
+    els.kpiDays.textContent = String(days.length);
+    renderHistoryTable();
+    renderLatest();
+    renderDiagCards();
+    drawCharts();
+  }
+
+  function renderLatest(){
+    if (!state.days.length) {
+      els.summaryLatest.innerHTML = '<div class="muted">Добавьте хотя бы один день данных.</div>';
+      els.finalDiagnosis.innerHTML = '<span class="muted">—</span>';
+      els.finalAction.textContent = '—';
+      els.forecastBox.textContent = '—';
+      els.kpiConfidence.textContent = '—';
+      els.kpiSignal.textContent = '—';
+      els.kpiDiag.textContent = '—';
+      return;
+    }
+
+    const d = state.days[state.days.length - 1];
+    const info = DIAG_INFO[d.analysis.best];
+    const toneClass = info.tone === 'good' ? 'good' : info.tone === 'bad' ? 'bad' : info.tone === 'warn' ? 'warn' : 'blue';
+
+    els.summaryLatest.innerHTML = `
+      <div class="grid grid-4">
+        <div class="kpi"><div class="t">CTR total</div><div class="v">${fmt(d.derived.total.ctr,2)}%</div></div>
+        <div class="kpi"><div class="t">CPM total</div><div class="v">€${fmt(d.derived.total.cpm,2)}</div></div>
+        <div class="kpi"><div class="t">Frequency total</div><div class="v">${fmt(d.derived.total.freq,2)}</div></div>
+        <div class="kpi"><div class="t">CR total</div><div class="v">${fmt(d.derived.total.cr,2)}%</div></div>
+      </div>
+      <div class="grid grid-4" style="margin-top:10px">
+        <div class="notice">A: ${d.A.msgs} сообщений, CTR ${fmt(d.derived.A.ctr,2)}%</div>
+        <div class="notice">E: ${d.E.msgs} сообщений, CTR ${fmt(d.derived.E.ctr,2)}%</div>
+        <div class="notice">Расход total: €${fmt(d.A.spend + d.E.spend,2)}</div>
+        <div class="notice">Клики total: ${d.A.clicks + d.E.clicks}</div>
+      </div>
+    `;
+
+    els.finalDiagnosis.innerHTML = `<span class="pill ${toneClass}">${d.analysis.best} — ${info.name}</span> <span class="badge">${d.analysis.stage}</span> <span class="badge">confidence ${d.analysis.confidence}%</span>`;
+    els.finalAction.textContent = d.analysis.action;
+    els.forecastBox.textContent = d.analysis.forecast;
+    els.kpiConfidence.textContent = d.analysis.confidence + '%';
+    els.kpiSignal.textContent = d.analysis.stage;
+    els.kpiDiag.textContent = d.analysis.best;
+  }
+
+  function renderDiagCards(){
+    const latest = state.days[state.days.length - 1];
+    const box = els.diagGrid;
+    box.innerHTML = '';
+    for (const code of PRIORITY) {
+      const info = DIAG_INFO[code];
+      const active = latest && latest.analysis.best === code;
+      const score = latest ? latest.analysis.scores[code] : 0;
+      const reasons = latest ? latest.analysis.reasons[code] : [];
+      const div = document.createElement('div');
+      div.className = 'diag-card' + (active ? ' active' : '');
+      div.innerHTML = `
+        <div class="title-row">
+          <div><b>${code} — ${info.name}</b></div>
+          <span class="pill ${info.tone === 'good' ? 'good' : info.tone === 'bad' ? 'bad' : info.tone === 'warn' ? 'warn' : 'blue'}">score ${score}</span>
+        </div>
+        <div class="small" style="margin-top:8px">${reasons.length ? reasons.join(' ') : 'Нет достаточных признаков.'}</div>
+      `;
+      box.appendChild(div);
+    }
+  }
+
+  function renderHistoryTable(){
+    const tbody = els.historyTable.querySelector('tbody');
+    tbody.innerHTML = '';
+    [...state.days].reverse().forEach(d => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${d.date}</td>
+        <td>${d.A.impr}</td><td>${d.A.reach}</td><td>${fmt(d.A.spend,2)}</td><td>${d.A.clicks}</td><td>${d.A.msgs}</td>
+        <td>${d.E.impr}</td><td>${d.E.reach}</td><td>${fmt(d.E.spend,2)}</td><td>${d.E.clicks}</td><td>${d.E.msgs}</td>
+        <td>${d.analysis ? d.analysis.best : '—'}</td><td>${d.analysis ? d.analysis.confidence + '%' : '—'}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function drawCharts(){
+    const labels = state.days.map(d => d.date.slice(5));
+    const ctrA = state.days.map(d => d.derived?.A?.ctr || 0);
+    const ctrE = state.days.map(d => d.derived?.E?.ctr || 0);
+    const msgsA = state.days.map(d => d.A.msgs || 0);
+    const msgsE = state.days.map(d => d.E.msgs || 0);
+    drawLineChart(els.chartCTR, labels, [
+      {name:'CTR A', data:ctrA, color:'#4da3ff'},
+      {name:'CTR E', data:ctrE, color:'#1fbf75'}
+    ], '%');
+    drawLineChart(els.chartMsgs, labels, [
+      {name:'Msgs A', data:msgsA, color:'#f0b429'},
+      {name:'Msgs E', data:msgsE, color:'#ea5455'}
+    ], '');
+  }
+
+  function drawLineChart(canvas, labels, series, suffix){
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle = '#0e131a'; ctx.fillRect(0,0,w,h);
+    const pad = {l:44,r:14,t:16,b:34};
+    const all = series.flatMap(s => s.data);
+    const max = Math.max(1, ...all);
+    const min = Math.min(0, ...all);
+    const innerW = w - pad.l - pad.r;
+    const innerH = h - pad.t - pad.b;
+
+    ctx.strokeStyle = '#283241'; ctx.lineWidth = 1;
+    for (let i=0;i<5;i++){
+      const y = pad.t + innerH * i/4;
+      ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w-pad.r, y); ctx.stroke();
+      const v = max - (max-min)*i/4;
+      ctx.fillStyle = '#8e9aae'; ctx.font = '11px Arial';
+      ctx.fillText(fmt(v,1)+suffix, 6, y+4);
+    }
+
+    const stepX = labels.length > 1 ? innerW/(labels.length-1) : innerW;
+    labels.forEach((lab, i) => {
+      const x = pad.l + (labels.length > 1 ? i*stepX : innerW/2);
+      ctx.fillStyle = '#8e9aae'; ctx.font = '11px Arial';
+      ctx.fillText(lab, x-14, h-12);
+    });
+
+    series.forEach(s => {
+      ctx.strokeStyle = s.color; ctx.lineWidth = 2; ctx.beginPath();
+      s.data.forEach((v,i)=>{
+        const x = pad.l + (labels.length > 1 ? i*stepX : innerW/2);
+        const y = pad.t + innerH - ((v - min)/(max-min || 1))*innerH;
+        if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      });
+      ctx.stroke();
+      s.data.forEach((v,i)=>{
+        const x = pad.l + (labels.length > 1 ? i*stepX : innerW/2);
+        const y = pad.t + innerH - ((v - min)/(max-min || 1))*innerH;
+        ctx.fillStyle = s.color; ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill();
+      });
+    });
+
+    let lx = pad.l;
+    series.forEach(s => {
+      ctx.fillStyle = s.color; ctx.fillRect(lx, 6, 12, 12);
+      ctx.fillStyle = '#d7deea'; ctx.font = '12px Arial'; ctx.fillText(s.name, lx+18, 16);
+      lx += 90;
+    });
+  }
+
+  function exportCsv(){
+    const headers = ['date','impr_A','reach_A','spend_A','clicks_A','msgs_A','impr_E','reach_E','spend_E','clicks_E','msgs_E','diag','confidence'];
+    const rows = state.days.map(d => [
+      d.date,d.A.impr,d.A.reach,d.A.spend,d.A.clicks,d.A.msgs,d.E.impr,d.E.reach,d.E.spend,d.E.clicks,d.E.msgs,d.analysis.best,d.analysis.confidence
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    downloadText(csv, `trafik_pro_max_${todayISO()}.csv`, 'text/csv;charset=utf-8;');
+  }
+
+  function importCsv(ev){
+    const file = ev.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try{
+        const text = String(reader.result || '').trim();
+        if (!text) throw new Error('Пустой файл.');
+        const lines = text.split(/\r?\n/).filter(Boolean);
+        const headers = lines[0].split(',').map(s=>s.trim());
+        const idx = Object.fromEntries(headers.map((h,i)=>[h,i]));
+        const required = ['date','impr_A','reach_A','spend_A','clicks_A','msgs_A','impr_E','reach_E','spend_E','clicks_E','msgs_E'];
+        for (const key of required) if (!(key in idx)) throw new Error('Не хватает колонки: ' + key);
+        const imported = [];
+        for (let i=1;i<lines.length;i++){
+          const cols = lines[i].split(',');
+          const d = {
+            date: cols[idx.date],
+            A:{impr:num(cols[idx.impr_A]), reach:num(cols[idx.reach_A]), spend:num(cols[idx.spend_A]), clicks:num(cols[idx.clicks_A]), msgs:num(cols[idx.msgs_A])},
+            E:{impr:num(cols[idx.impr_E]), reach:num(cols[idx.reach_E]), spend:num(cols[idx.spend_E]), clicks:num(cols[idx.clicks_E]), msgs:num(cols[idx.msgs_E])}
+          };
+          d.derived = deriveAll(d);
+          imported.push(d);
+        }
+        state.days = imported.sort((a,b)=>a.date.localeCompare(b.date)).slice(-MAX_DAYS);
+        recomputeAllAnalyses();
+        persist();
+        renderAll();
+        alert('CSV импортирован.');
+      } catch(err){
+        alert('Ошибка импорта CSV: ' + err.message);
+      } finally {
+        ev.target.value = '';
+      }
+    };
+    reader.readAsText(file, 'utf-8');
+  }
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return {days:[]};
+      const parsed = JSON.parse(raw);
+      if (!parsed.days || !Array.isArray(parsed.days)) return {days:[]};
+      return parsed;
+    } catch {
+      return {days:[]};
+    }
+  }
+
+  function persist(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function todayISO(){
+    const d = new Date();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const day = String(d.getDate()).padStart(2,'0');
+    return `${d.getFullYear()}-${m}-${day}`;
+  }
+
+  function getPath(obj, path){
+    return path.split('.').reduce((acc,k)=>acc && acc[k] != null ? acc[k] : 0, obj) || 0;
+  }
+  function avg(arr){ return arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0; }
+  function safeDiv(a,b){ return b ? a/b : 0; }
+  function num(v){ const n = parseFloat(v); return Number.isFinite(n) ? n : 0; }
+  function fmt(v,d=2){ return Number(v).toLocaleString('ru-RU',{minimumFractionDigits:d, maximumFractionDigits:d}); }
+  function clamp(v,min,max){ return Math.min(max, Math.max(min, v)); }
+  function deltaPct(today, base){
+    if (base === 0) {
+      if (today === 0) return 0;
+      return 100;
+    }
+    return ((today - base) / base) * 100;
+  }
+  function downloadText(text, filename, mime){
+    const blob = new Blob([text], {type:mime});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  }
+})();
+</script>
+</body>
+</html>
