@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRAFIK PRO CSV v43</title>
+<style>
+:root{
+  --bg:#07101f; --card:#0e1b33; --card2:#0b1730; --line:#21385f; --text:#eef4ff;
+  --muted:#a8b6d8; --btn:#223660; --btn2:#ff6472; --accent:#f9a94a; --green:#31c47b; --red:#ff7b8b;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:linear-gradient(180deg,#07101f,#08152a);color:var(--text);
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:18px 14px 120px}
+h1,h2,h3,p{margin:0}
+.card{background:linear-gradient(180deg,rgba(17,31,58,.96),rgba(10,22,45,.98));
+border:1px solid rgba(75,110,170,.25);border-radius:26px;padding:18px;margin:14px 0;box-shadow:0 20px 60px rgba(0,0,0,.22)}
+.headerTitle{font-size:38px;font-weight:900;line-height:1.02;margin-bottom:6px}
+.sub{color:var(--muted);font-size:18px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.btn{border:none;border-radius:18px;padding:16px 18px;background:var(--btn);color:#fff;font-size:18px;font-weight:800}
+.btn.orange{background:var(--accent);color:#fff}
+.btn.red{background:var(--btn2)}
+.btn.ghost{background:transparent;border:1px solid var(--line)}
+.btn:disabled{opacity:.45}
+.pill{display:inline-flex;align-items:center;gap:8px;background:#14264a;border:1px solid #2f4f86;border-radius:999px;padding:10px 14px;font-weight:800}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.kv{background:#0b1730;border:1px solid rgba(70,108,168,.35);border-radius:18px;padding:14px}
+.kv .label{color:var(--muted);font-size:14px;margin-bottom:6px}
+.kv .val{font-size:28px;font-weight:900}
+.smsTable .head,.smsTable .r{display:grid;grid-template-columns:1.3fr .8fr .8fr .9fr;gap:10px;align-items:center}
+.smsTable .head{color:var(--muted);font-size:16px;padding:0 8px 10px;border-bottom:1px solid rgba(90,120,170,.25)}
+.smsTable .r{padding:14px 8px;border-bottom:1px solid rgba(90,120,170,.18)}
+.badge{display:inline-block;padding:5px 10px;border-radius:999px;background:#403423;border:1px solid #7c6441;color:#f5d6a2;font-weight:800}
+.smsBox{display:flex;justify-content:center;align-items:center;height:84px;border-radius:22px;background:#07112a;border:2px solid #2b4f94;font-size:30px;font-weight:900;cursor:pointer}
+.statusOk{background:#0f2a22;border-color:#2d8f67;color:#9ef0c7}
+.diag{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.diag .code{font-size:26px;font-weight:900;padding:12px 16px;border-radius:18px;background:#463626;border:1px solid #9b7b52;color:#ffd79a}
+.diag .code.green{background:#12382c;border-color:#2f8f67;color:#9ef0c7}
+.diag .code.red{background:#3d2330;border-color:#95586c;color:#ffbfd0}
+.diag .st{padding:10px 14px;border-radius:999px;background:#102145;border:1px solid #2d4f88;font-size:20px;font-weight:800}
+.list{display:grid;grid-template-columns:1fr auto;gap:8px 14px}
+.list div{padding:9px 0;border-bottom:1px solid rgba(90,120,170,.18);font-size:17px}
+.historyHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.small{font-size:14px;color:var(--muted)}
+.modalBg{position:fixed;inset:0;background:rgba(4,9,18,.72);display:none;align-items:end;z-index:999}
+.modal{width:100%;max-width:960px;margin:0 auto;background:#0d1d39;border-radius:26px 26px 0 0;padding:18px;border-top:1px solid #35588f}
+.bigInput{width:100%;height:86px;border-radius:20px;border:2px solid #31589a;background:#061126;color:#fff;font-size:42px;font-weight:900;text-align:center}
+.modal .row .btn{flex:1}
+.showHide{background:#15284f;border:1px solid #2f4f86;border-radius:14px;padding:12px 14px;font-weight:800}
+.err{color:#ffb1b9;font-weight:800}
+.ok{color:#9ef0c7;font-weight:800}
+@media (max-width:700px){
+  .headerTitle{font-size:32px}
+  .grid4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .smsTable .head,.smsTable .r{grid-template-columns:1fr .8fr .8fr .9fr}
+  .btn{font-size:16px;padding:15px 14px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="headerTitle">TRAFIK PRO CSV v43</div>
+    <div class="sub">Только CSV + крупный SMS-ввод. Клики читаются из твоих CSV.</div>
+  </div>
+
+  <div class="card">
+    <div class="grid4">
+      <div class="kv"><div class="label">Сохранено дней</div><div class="val" id="savedDays">0</div></div>
+      <div class="kv"><div class="label">CSV дней</div><div class="val" id="csvDays">0</div></div>
+      <div class="kv"><div class="label">Статус ДОСТАВКА</div><div class="val" id="dStatus">—</div></div>
+      <div class="kv"><div class="label">Статус РЕАКЦИЯ</div><div class="val" id="rStatus">—</div></div>
+    </div>
+    <div style="height:14px"></div>
+    <div class="row">
+      <label class="btn"><input id="deliveryFile" type="file" accept=".csv" hidden>Загрузить ДОСТАВКА.csv</label>
+      <label class="btn"><input id="reactionFile" type="file" accept=".csv" hidden>Загрузить РЕАКЦИЯ.csv</label>
+      <button class="btn" id="buildBtn">Собрать из CSV</button>
+      <button class="btn orange" id="importBtn">Импортировать CSV в историю</button>
+      <button class="btn" id="importNewBtn">Импортировать только новые</button>
+      <button class="btn red" id="clearCsvBtn">Стереть CSV</button>
+    </div>
+    <div style="height:10px"></div>
+    <div id="parseInfo" class="small">Ждёт 2 CSV. Поддерживает твои колонки Meta.</div>
+  </div>
+
+  <div class="card">
+    <div class="historyHead">
+      <h2>SMS по датам</h2>
+      <div class="pill">A = Якорь • E = Расширитель</div>
+    </div>
+    <div class="smsTable">
+      <div class="head"><div>Дата</div><div>SMS Якорь</div><div>SMS Расширитель</div><div>Действие</div></div>
+      <div id="csvRows"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="historyHead">
+      <h2>Управление историей</h2>
+      <div class="pill">Короткая память: 10 дней • Длинная память: 90 дней</div>
+    </div>
+    <div class="row">
+      <button class="btn red" id="clearAllBtn">Стереть всё</button>
+      <button class="btn" id="keep7Btn">Стереть 7 дней</button>
+      <button class="btn" id="keep90Btn">Стереть 90 дней</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="historyHead">
+      <h2>История дней</h2>
+      <div class="pill">Максимум 90 дней</div>
+    </div>
+    <div id="history"></div>
+  </div>
+</div>
+
+<div class="modalBg" id="smsModalBg">
+  <div class="modal">
+    <div class="historyHead">
+      <h2 id="modalTitle">SMS</h2>
+      <button class="btn ghost" id="closeModalBtn">Закрыть</button>
+    </div>
+    <input id="bigSmsInput" class="bigInput" inputmode="numeric" pattern="[0-9]*">
+    <div style="height:12px"></div>
+    <div class="row">
+      <button class="btn" data-add="-10">-10</button>
+      <button class="btn" data-add="-5">-5</button>
+      <button class="btn" data-add="-1">-1</button>
+      <button class="btn" data-add="+1">+1</button>
+      <button class="btn" data-add="+5">+5</button>
+      <button class="btn" data-add="+10">+10</button>
+    </div>
+    <div style="height:12px"></div>
+    <div class="row">
+      <button class="btn red" id="clearSmsBtn">Стереть</button>
+      <button class="btn orange" id="saveSmsBtn">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const LS_HISTORY = 'trafik_history_v43';
+const LS_SMS = 'trafik_sms_by_date_v43';
+
+let deliveryCsvText = '';
+let reactionCsvText = '';
+let csvDays = [];
+let historyDays = loadJson(LS_HISTORY, []);
+let smsByDate = loadJson(LS_SMS, {});
+let smsEditCtx = null;
+
+const deliveryAliases = {
+  date: ['Дата начала отчетности','Дата','date'],
+  ad: ['Название объявления','ad name','ad'],
+  spend: ['Потраченная сумма (EUR)','Потраченная сумма'],
+  impressions: ['Показы'],
+  reach: ['Охват'],
+  frequency: ['Частота'],
+  cpm: ['CPM (цена за 1 000 показов) (EUR)','CPM (цена за 1 000 показов) (EUR)','CPM'],
+  ctr_all: ['CTR (все)','CTR']
+};
+const reactionAliases = {
+  date: ['Дата начала отчетности','Дата','date'],
+  ad: ['Название объявления','ad name','ad'],
+  clicks: ['Клики по ссылке','Link Clicks','Clicks','Клики'],
+  ctr_link: ['CTR (отношение кликов к показам)','CTR (link click-through rate)','CTR link'],
+  cpc: ['CPC (цена за клик по ссылке) (EUR)','CPC (цена за клик по ссылке)','CPC'],
+  spend: ['Потраченная сумма (EUR)','Потраченная сумма']
+};
+
+function loadJson(key, fallback){ try{ return JSON.parse(localStorage.getItem(key)||JSON.stringify(fallback)); }catch(e){ return fallback; } }
+function saveJson(key, value){ localStorage.setItem(key, JSON.stringify(value)); }
+function toNum(v){
+  if(v===undefined || v===null || v==='') return 0;
+  if(typeof v === 'number') return isFinite(v) ? v : 0;
+  let s = String(v).replace(/\u00a0/g,' ').replace(/\s+/g,'').replace(',', '.');
+  let n = parseFloat(s);
+  return isFinite(n) ? n : 0;
+}
+function esc(s){ return String(s).replace(/[&<>"]/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[m])); }
+function norm(s){ return String(s||'').trim().toUpperCase(); }
+function detectAdType(name){
+  const n = norm(name);
+  if(n.includes('JAKOR') || n.includes('ЯКОР') || n === 'A') return 'A';
+  if(n.includes('RASSHIRITEL') || n.includes('РАСШИР') || n === 'E') return 'E';
+  return n.includes('A') && !n.includes('E') ? 'A' : 'E';
+}
+function parseCsv(text){
+  const lines = text.replace(/\r/g,'').split('\n').filter(Boolean);
+  if(!lines.length) return [];
+  const rows = [];
+  let row=[], cell='', q=false;
+  const pushCell=()=>{ row.push(cell); cell=''; };
+  const pushRow=()=>{ rows.push(row); row=[]; };
+  for(const line of lines){
+    row=[]; cell=''; q=false;
+    for(let i=0;i<line.length;i++){
+      const ch=line[i];
+      if(ch === '"'){
+        if(q && line[i+1] === '"'){ cell += '"'; i++; }
+        else q = !q;
+      } else if(ch === ',' && !q){
+        pushCell();
+      } else {
+        cell += ch;
+      }
+    }
+    pushCell(); pushRow();
+  }
+  const headers = rows[0].map(h=>h.trim());
+  return rows.slice(1).map(r=>{
+    const obj={};
+    headers.forEach((h,i)=> obj[h]= (r[i] ?? '').trim() );
+    return obj;
+  });
+}
+function pick(row, aliases){
+  for(const a of aliases){
+    if(a in row) return row[a];
+    const found = Object.keys(row).find(k => k.trim() === a.trim());
+    if(found) return row[found];
+  }
+  return '';
+}
+function mapDelivery(rows){
+  return rows.map(r=>{
+    return {
+      date: pick(r, deliveryAliases.date),
+      ad: detectAdType(pick(r, deliveryAliases.ad)),
+      spend: toNum(pick(r, deliveryAliases.spend)),
+      impressions: toNum(pick(r, deliveryAliases.impressions)),
+      reach: toNum(pick(r, deliveryAliases.reach)),
+      frequency: toNum(pick(r, deliveryAliases.frequency)),
+      cpm: toNum(pick(r, deliveryAliases.cpm)),
+      ctr_all: toNum(pick(r, deliveryAliases.ctr_all)),
+    };
+  }).filter(x=>x.date);
+}
+function mapReaction(rows){
+  return rows.map(r=>{
+    return {
+      date: pick(r, reactionAliases.date),
+      ad: detectAdType(pick(r, reactionAliases.ad)),
+      clicks: toNum(pick(r, reactionAliases.clicks)),
+      ctr_link: toNum(pick(r, reactionAliases.ctr_link)),
+      cpc: toNum(pick(r, reactionAliases.cpc)),
+      spend: toNum(pick(r, reactionAliases.spend)),
+    };
+  }).filter(x=>x.date);
+}
+function mergeCsv(delivery, reaction){
+  const byDate = {};
+  function ensureDate(date){
+    if(!byDate[date]){
+      byDate[date] = {
+        date,
+        A:{impressions:0, reach:0, spend:0, clicks:0, frequency:0, cpm:0, ctr_all:0, ctr_link:0, cpc:0, sms:0},
+        E:{impressions:0, reach:0, spend:0, clicks:0, frequency:0, cpm:0, ctr_all:0, ctr_link:0, cpc:0, sms:0}
+      };
+    }
+    return byDate[date];
+  }
+  delivery.forEach(r=>{
+    const day = ensureDate(r.date);
+    day[r.ad] = {...day[r.ad], ...r};
+  });
+  reaction.forEach(r=>{
+    const day = ensureDate(r.date);
+    day[r.ad] = {...day[r.ad], ...r};
+  });
+  const days = Object.values(byDate).sort((a,b)=> a.date.localeCompare(b.date));
+  days.forEach(d=>{
+    d.A.sms = toNum((smsByDate[d.date]||{}).A);
+    d.E.sms = toNum((smsByDate[d.date]||{}).E);
+  });
+  return days;
+}
+function pct(today, avg){
+  if(!isFinite(avg) || avg===0) return 0;
+  return ((today-avg)/avg)*100;
+}
+function avg3(arr, idx, getter){
+  const start = Math.max(0, idx-3), end = idx;
+  const part = arr.slice(start,end);
+  if(!part.length) return 0;
+  return part.reduce((s,x)=> s + getter(x),0) / part.length;
+}
+function tot(day,key){ return toNum(day.A[key]) + toNum(day.E[key]); }
+function safeCr(clicks,sms){ return clicks>0 ? (sms/clicks)*100 : 0; }
+function derive(days){
+  return days.map((d,idx)=>{
+    const out = JSON.parse(JSON.stringify(d));
+    out.total = {
+      impressions: tot(d,'impressions'),
+      reach: tot(d,'reach'),
+      spend: tot(d,'spend'),
+      clicks: tot(d,'clicks'),
+      sms: tot(d,'sms'),
+      ctr_all: 0, cpc: 0, cpm: 0, freq: 0, cr: 0
+    };
+    out.total.ctr_all = out.total.impressions>0 ? (out.total.clicks/out.total.impressions)*100 : 0;
+    out.total.cpc = out.total.clicks>0 ? out.total.spend/out.total.clicks : 0;
+    out.total.cpm = out.total.impressions>0 ? out.total.spend/out.total.impressions*1000 : 0;
+    out.total.freq = out.total.reach>0 ? out.total.impressions/out.total.reach : 0;
+    out.total.cr = safeCr(out.total.clicks, out.total.sms);
+
+    const prev3 = idx>=3;
+    out.delta = {};
+    if(prev3){
+      ['impressions','reach','spend','clicks','sms','cpm','cpc','freq','cr','ctr_all'].forEach(k=>{
+        const avg = avg3(days, idx, x => {
+          if(k==='cpm'){
+            const imp = tot(x,'impressions'), sp = tot(x,'spend'); return imp>0? sp/imp*1000 : 0;
+          }
+          if(k==='cpc'){
+            const cl = tot(x,'clicks'), sp = tot(x,'spend'); return cl>0? sp/cl : 0;
+          }
+          if(k==='freq'){
+            const imp = tot(x,'impressions'), r = tot(x,'reach'); return r>0? imp/r : 0;
+          }
+          if(k==='cr'){
+            return safeCr(tot(x,'clicks'), tot(x,'sms'));
+          }
+          if(k==='ctr_all'){
+            const imp = tot(x,'impressions'), cl = tot(x,'clicks'); return imp>0? (cl/imp)*100 : 0;
+          }
+          return tot(x,k);
+        });
+        out.delta[k] = pct(out.total[k], avg);
+      });
+    } else {
+      ['impressions','reach','spend','clicks','sms','cpm','cpc','freq','cr','ctr_all'].forEach(k=> out.delta[k]=0);
+    }
+
+    const shareA = out.total.spend>0 ? (toNum(d.A.spend)/out.total.spend)*100 : 0;
+    const prevShareAAvg = prev3 ? avg3(days, idx, x => {
+      const t = tot(x,'spend'); return t>0 ? (toNum(x.A.spend)/t)*100 : 0;
+    }) : shareA;
+    out.delta.shareA = pct(shareA, prevShareAAvg);
+
+    out.signals = getSignals(days, out, idx);
+    return out;
+  });
+}
+function getSignals(allDays, d, idx){
+  const sigs = [];
+  const δ = d.delta;
+  // auction signals
+  if(δ.cpm <= -15 && δ.ctr_all >= 10 && δ.reach >= 10) sigs.push(['AUCTION_WIN','Аукцион: выигрыш']);
+  if(δ.cpm >= 15 && δ.ctr_all > -10 && δ.reach <= 5) sigs.push(['AUCTION_FIGHT','Аукцион: борьба']);
+  if(δ.cpm >= 20 && δ.ctr_all <= -15 && δ.reach <= -10) sigs.push(['AUCTION_LOSS','Аукцион: проигрыш']);
+
+  // main diagnoses based on user's file
+  if(δ.ctr_all >= 0 && δ.cpc <= 0 && δ.cpm <= 0 && δ.cr >= 0 && δ.sms >= 0) sigs.push(['D1','D1 — Зона силы']);
+  if((δ.cpm >= 8 && δ.cpc >= 10 && δ.reach <= -10) || (δ.cpm >= 30 && δ.cpc >= 20 && δ.reach <= -15 && δ.ctr_all > -10)) sigs.push(['D2','D2 — Давление аукциона']);
+  if(d.total.freq >= 2.3 && δ.ctr_all <= -18 && δ.cpc >= 15) sigs.push(['D3','D3 — Перегрев креатива']);
+  if(δ.ctr_all <= -30 && δ.cpc >= 30 && δ.cpm <= -10) sigs.push(['D4','D4 — Холодная аудитория']);
+  if(δ.ctr_all <= -20 && δ.cpc >= 15 && Math.abs(δ.cpm) <= 10) sigs.push(['D5','D5 — Проблема хука']);
+  if(δ.ctr_all >= 0 && δ.clicks >= 0 && δ.cr <= -40 && δ.sms <= -40) sigs.push(['D6','D6 — Проблема воронки']);
+  if(Math.abs(d.delta.shareA) >= 20 && Math.abs(δ.ctr_all) <= 12 && Math.abs(δ.cpc) <= 12 && !sigs.some(s=>['D2','D3','D5','D6'].includes(s[0]))) sigs.push(['D7','D7 — Перераспределение бюджета']);
+
+  // intersections/context
+  if(sigs.some(s=>s[0]==='D3') && sigs.some(s=>s[0]==='AUCTION_FIGHT')) sigs.push(['CTX','Пересечение: перегрев + борьба аукциона']);
+  if(sigs.some(s=>s[0]==='D6') && sigs.some(s=>s[0]==='AUCTION_LOSS')) sigs.push(['CTX','Пересечение: воронка + проигрыш аукциона']);
+  if(sigs.some(s=>s[0]==='D5') && sigs.some(s=>s[0]==='AUCTION_LOSS')) sigs.push(['CTX','Пересечение: хук + проигрыш аукциона']);
+  if(!sigs.length) sigs.push(['D8','D8 — Шум']);
+
+  const priority = ['D3','D2','D6','D5','D4','D7','D1','D8'];
+  let main = sigs.find(s => priority.includes(s[0]));
+  main = priority.map(code=>sigs.find(s=>s[0]===code)).find(Boolean) || ['D8','D8 — Шум'];
+  const code = main[0], label = main[1];
+
+  // status persistence
+  let status = 'Сигнал';
+  if(idx>0){
+    const prevMain = allDays[idx-1]._mainCode || (allDays[idx-1].signals && allDays[idx-1].signals.mainCode);
+  }
+  const prev1 = idx>0 ? deriveCache[idx-1] : null;
+  const prev2 = idx>1 ? deriveCache[idx-2] : null;
+  if(prev1 && prev1.signals.mainCode === code && prev2 && prev2.signals.mainCode === code) status = 'Подтверждён';
+  else if(prev1 && prev1.signals.mainCode === code) status = 'Сигнал усиливается';
+
+  let action = 'Наблюдать';
+  if(code==='D1') action = 'Оставить оба';
+  if(code==='D2') action = 'Наблюдать аукцион';
+  if(code==='D3') action = 'Менять креатив';
+  if(code==='D4') action = 'Обновить подачу';
+  if(code==='D5') action = 'Готовить новый хук';
+  if(code==='D6') action = 'Проверить воронку';
+  if(code==='D7') action = 'Слабый наблюдать';
+  if(code==='D8') action = 'Не менять';
+
+  let confidence = 55;
+  if(code==='D1') confidence = status==='Подтверждён' ? 93 : 74;
+  if(code==='D2') confidence = 68;
+  if(code==='D3') confidence = status==='Подтверждён' ? 95 : 78;
+  if(code==='D4') confidence = 74;
+  if(code==='D5') confidence = 66;
+  if(code==='D6') confidence = status==='Подтверждён' ? 95 : 78;
+  if(code==='D7') confidence = status==='Подтверждён' ? 95 : 77;
+  if(code==='D8') confidence = 55;
+
+  return {all:sigs, mainCode:code, mainLabel:label, status, action, confidence};
+}
+let deriveCache = [];
+
+function renderCsvRows(){
+  const root = document.getElementById('csvRows');
+  document.getElementById('csvDays').textContent = csvDays.length;
+  if(!csvDays.length){ root.innerHTML = '<div class="small" style="padding:18px 8px">Нет собранных дней.</div>'; return; }
+  root.innerHTML = csvDays.map(d=>{
+    const st = historyDays.find(x=>x.date===d.date) ? '<span class="badge statusOk">уже есть</span>' : '<span class="badge">новый</span>';
+    return `<div class="r">
+      <div><div style="font-size:18px;font-weight:900">${fmtDateRu(d.date)}</div><div style="margin-top:8px">${st}</div></div>
+      <div><div class="smsBox" onclick="openSms('${d.date}','A')">${toNum(d.A.sms)}</div></div>
+      <div><div class="smsBox" onclick="openSms('${d.date}','E')">${toNum(d.E.sms)}</div></div>
+      <div class="row" style="gap:8px"><button class="showHide" onclick="toggleRaw('${d.date}')">Показать</button><button class="btn red" onclick="removeCsvDay('${d.date}')">Убрать</button></div>
+      <div id="raw_${d.date}" style="display:none;grid-column:1/-1" class="list">
+        ${metricRows(d)}
+      </div>
+    </div>`;
+  }).join('');
+}
+function metricRows(d){
+  return [
+    ['Якорь — показы', fInt(d.A.impressions)],
+    ['Якорь — охват', fInt(d.A.reach)],
+    ['Якорь — расход', f2(d.A.spend)],
+    ['Якорь — клики', fInt(d.A.clicks)],
+    ['Якорь — сообщения', fInt(d.A.sms)],
+    ['Расширитель — показы', fInt(d.E.impressions)],
+    ['Расширитель — охват', fInt(d.E.reach)],
+    ['Расширитель — расход', f2(d.E.spend)],
+    ['Расширитель — клики', fInt(d.E.clicks)],
+    ['Расширитель — сообщения', fInt(d.E.sms)],
+  ].map(x=>`<div>${x[0]}</div><div style="text-align:right;font-weight:900">${x[1]}</div>`).join('');
+}
+function renderHistory(){
+  document.getElementById('savedDays').textContent = historyDays.length;
+  const root = document.getElementById('history');
+  if(!historyDays.length){ root.innerHTML = '<div class="small">История пуста.</div>'; return; }
+  deriveCache = derive(historyDays);
+  root.innerHTML = [...deriveCache].reverse().map(d=>{
+    const codeClass = d.signals.mainCode==='D1' ? 'green' : (d.signals.mainCode==='D3' ? 'red' : '');
+    const contexts = d.signals.all.filter(x=>!x[0].startsWith('D') && x[0] !== 'CTX').map(x=>`<span class="st">${x[1]}</span>`).join(' ');
+    const intersects = d.signals.all.filter(x=>x[0]==='CTX').map(x=>`<div class="small" style="margin-top:8px">${x[1]}</div>`).join('');
+    return `<div class="card">
+      <div class="historyHead"><h2>${fmtDateRu(d.date)}</h2><div class="row"><button class="showHide" onclick="toggleHistRaw('${d.date}')">Показать</button><button class="btn red" onclick="deleteHistoryDay('${d.date}')">Удалить</button></div></div>
+      <div class="diag">
+        <div class="code ${codeClass}">${d.signals.mainLabel}</div>
+        <div class="st">${d.signals.status}</div>
+        <div class="st">Confidence: ${d.signals.confidence}%</div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="row"><div class="st">${d.signals.action}</div>${contexts}</div>
+      ${intersects}
+      <div id="hist_${d.date}" style="display:none;margin-top:14px" class="list">${metricRows(d)}</div>
+    </div>`;
+  }).join('');
+}
+function renderStatuses(msg=''){
+  document.getElementById('dStatus').textContent = deliveryCsvText ? 'OK' : '—';
+  document.getElementById('rStatus').textContent = reactionCsvText ? 'OK' : '—';
+  document.getElementById('parseInfo').innerHTML = msg || 'Ждёт 2 CSV. Поддерживает колонки: Показы / Охват / Частота / Клики по ссылке / Расход.';
+}
+function fmtDateRu(s){
+  const [y,m,d] = s.split('-'); const dt = new Date(Number(y),Number(m)-1,Number(d));
+  return dt.toLocaleDateString('ru-RU',{day:'numeric',month:'short',year:'numeric'}).replace(' г.','') + ' г.';
+}
+function fInt(n){ return Math.round(toNum(n)).toLocaleString('ru-RU'); }
+function f2(n){ return toNum(n).toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+function openSms(date, ad){
+  smsEditCtx = {date, ad};
+  document.getElementById('modalTitle').textContent = `${fmtDateRu(date)} • SMS ${ad==='A'?'Якорь':'Расширитель'}`;
+  document.getElementById('bigSmsInput').value = toNum((smsByDate[date]||{})[ad]);
+  document.getElementById('smsModalBg').style.display = 'flex';
+  setTimeout(()=>document.getElementById('bigSmsInput').focus(),50);
+}
+function closeSms(){
+  document.getElementById('smsModalBg').style.display = 'none';
+  smsEditCtx = null;
+}
+function saveSms(){
+  if(!smsEditCtx) return;
+  const v = Math.max(0, parseInt(document.getElementById('bigSmsInput').value || '0',10) || 0);
+  smsByDate[smsEditCtx.date] = smsByDate[smsEditCtx.date] || {A:0,E:0};
+  smsByDate[smsEditCtx.date][smsEditCtx.ad] = v;
+  saveJson(LS_SMS, smsByDate);
+  csvDays.forEach(d=>{ if(d.date===smsEditCtx.date) d[smsEditCtx.ad].sms = v; });
+  historyDays.forEach(d=>{ if(d.date===smsEditCtx.date) d[smsEditCtx.ad].sms = v; });
+  closeSms(); renderCsvRows(); renderHistory();
+}
+function toggleRaw(date){
+  const el = document.getElementById('raw_'+date);
+  el.style.display = el.style.display === 'none' ? 'grid' : 'none';
+}
+function toggleHistRaw(date){
+  const el = document.getElementById('hist_'+date);
+  el.style.display = el.style.display === 'none' ? 'grid' : 'none';
+}
+function removeCsvDay(date){
+  csvDays = csvDays.filter(x=>x.date!==date);
+  renderCsvRows();
+}
+function deleteHistoryDay(date){
+  historyDays = historyDays.filter(x=>x.date!==date);
+  saveJson(LS_HISTORY, historyDays); renderHistory();
+}
+function clearCsv(){
+  deliveryCsvText=''; reactionCsvText=''; csvDays=[];
+  renderCsvRows(); renderStatuses('CSV очищен.');
+}
+function importHistory(onlyNew=false){
+  if(!csvDays.length){ renderStatuses('<span class="err">Нет собранных CSV-дней.</span>'); return; }
+  const map = new Map(historyDays.map(d=>[d.date,d]));
+  csvDays.forEach(d=>{
+    if(onlyNew && map.has(d.date)) return;
+    map.set(d.date, JSON.parse(JSON.stringify(d)));
+  });
+  historyDays = [...map.values()].sort((a,b)=>a.date.localeCompare(b.date)).slice(-90);
+  saveJson(LS_HISTORY, historyDays);
+  renderHistory(); renderCsvRows();
+  renderStatuses(`<span class="ok">Импорт выполнен. Дней в истории: ${historyDays.length}</span>`);
+}
+async function readFile(file){
+  return await file.text();
+}
+document.getElementById('deliveryFile').addEventListener('change', async e=>{
+  const file=e.target.files[0]; if(!file) return;
+  deliveryCsvText = await readFile(file); renderStatuses('<span class="ok">ДОСТАВКА.csv загружен.</span>');
+});
+document.getElementById('reactionFile').addEventListener('change', async e=>{
+  const file=e.target.files[0]; if(!file) return;
+  reactionCsvText = await readFile(file); renderStatuses('<span class="ok">РЕАКЦИЯ.csv загружен.</span>');
+});
+document.getElementById('buildBtn').addEventListener('click', ()=>{
+  if(!deliveryCsvText || !reactionCsvText){ renderStatuses('<span class="err">Нужно загрузить оба CSV.</span>'); return; }
+  const dRows = mapDelivery(parseCsv(deliveryCsvText));
+  const rRows = mapReaction(parseCsv(reactionCsvText));
+  csvDays = mergeCsv(dRows, rRows);
+  const clicksSum = csvDays.reduce((s,d)=>s+toNum(d.A.clicks)+toNum(d.E.clicks),0);
+  renderCsvRows();
+  renderStatuses(`<span class="ok">Собрано дней из CSV: ${csvDays.length}. Клики прочитаны: ${clicksSum}</span>`);
+});
+document.getElementById('importBtn').addEventListener('click', ()=>importHistory(false));
+document.getElementById('importNewBtn').addEventListener('click', ()=>importHistory(true));
+document.getElementById('clearCsvBtn').addEventListener('click', clearCsv);
+document.getElementById('clearAllBtn').addEventListener('click', ()=>{historyDays=[]; saveJson(LS_HISTORY, historyDays); renderHistory(); renderCsvRows();});
+document.getElementById('keep7Btn').addEventListener('click', ()=>{historyDays = historyDays.slice(-7); saveJson(LS_HISTORY, historyDays); renderHistory();});
+document.getElementById('keep90Btn').addEventListener('click', ()=>{historyDays = historyDays.slice(-90); saveJson(LS_HISTORY, historyDays); renderHistory();});
+document.getElementById('closeModalBtn').addEventListener('click', closeSms);
+document.getElementById('saveSmsBtn').addEventListener('click', saveSms);
+document.getElementById('clearSmsBtn').addEventListener('click', ()=>{ document.getElementById('bigSmsInput').value = 0; });
+document.querySelectorAll('[data-add]').forEach(btn=> btn.addEventListener('click', ()=>{
+  const input = document.getElementById('bigSmsInput');
+  const cur = parseInt(input.value||'0',10) || 0;
+  const add = parseInt(btn.dataset.add,10);
+  input.value = Math.max(0, cur + add);
+}));
+document.getElementById('smsModalBg').addEventListener('click', e=>{ if(e.target.id==='smsModalBg') closeSms(); });
+
+renderStatuses();
+renderCsvRows();
+renderHistory();
+</script>
+</body>
+</html>
