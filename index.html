@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TRAFIK PRO">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a0a0f">
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TRAFIK PRO</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a26;--border:#2a2a3a;
+  --accent:#00e5ff;--accent2:#ff3c5f;--accent3:#39ff6e;--warn:#ffb800;
+  --text:#e8e8f0;--text2:#8888a0;
+  --fh:'Bebas Neue',sans-serif;--fm:'Space Mono',monospace;--fb:'DM Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;overflow-x:hidden;font-size:15px}
+.hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(10,10,15,.97);backdrop-filter:blur(12px);z-index:100}
+.logo{font-family:var(--fh);font-size:28px;letter-spacing:4px;color:var(--accent);text-shadow:0 0 20px rgba(0,229,255,.35)}
+.logo small{color:var(--text2);font-size:11px;letter-spacing:2px;display:block;font-family:var(--fm);margin-top:-3px}
+.ver{background:var(--surface2);border:1px solid var(--border);padding:4px 10px;border-radius:4px;font-family:var(--fm);font-size:10px;color:var(--accent);letter-spacing:1px}
+.main{padding:16px;padding-bottom:50px}
+.sec{font-family:var(--fm);font-size:11px;color:var(--text2);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;margin-top:22px}
+/* UPLOAD */
+.ugrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.ubox{border:1.5px dashed var(--border);border-radius:12px;padding:16px 10px;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:var(--surface)}
+.ubox.loaded{border-color:var(--accent3);border-style:solid}
+.ubox input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.ubadge{display:inline-block;padding:3px 10px;border-radius:3px;font-family:var(--fm);font-size:11px;letter-spacing:1px;margin-bottom:6px}
+.ubadge.a{background:var(--accent);color:#000}.ubadge.e{background:var(--accent2);color:#fff}
+.uicon{font-size:22px;margin-bottom:5px}
+.ulabel{font-family:var(--fm);font-size:11px;color:var(--text2);letter-spacing:1px}
+.uname{font-size:11px;color:var(--accent3);margin-top:4px;word-break:break-all;min-height:16px}
+.info-bar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-family:var(--fm);font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6}
+.ok{color:var(--accent3)}.err{color:var(--accent2)}.wn{color:var(--warn)}
+.brow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.btn{border:none;border-radius:10px;padding:14px;font-family:var(--fm);font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .15s;text-transform:uppercase}
+.btn-primary{background:var(--accent);color:#000;font-family:var(--fh);font-size:24px;letter-spacing:3px;width:100%;border:none;border-radius:10px;padding:17px;cursor:pointer;margin-bottom:10px}
+.btn-primary:disabled{background:var(--border);color:var(--text2);cursor:not-allowed}
+.btn-build{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-import{background:rgba(0,229,255,.1);color:var(--accent);border:1px solid rgba(0,229,255,.25)}
+.btn-clear{background:rgba(255,60,95,.08);color:var(--accent2);border:1px solid rgba(255,60,95,.2)}
+.btn-mem{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+.counts{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.cpill{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-family:var(--fm);font-size:12px;color:var(--text2)}
+.cpill span{color:var(--accent);font-family:var(--fh);font-size:20px}
+/* MEM TABS */
+.mem-tabs{display:flex;gap:8px;margin-bottom:14px}
+.mem-tab{flex:1;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-family:var(--fm);font-size:11px;color:var(--text2);cursor:pointer;text-align:center;transition:all .2s;letter-spacing:1px}
+.mem-tab.active{background:var(--surface2);border-color:var(--warn);color:var(--warn)}
+/* RESULTS */
+#results{display:none}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tab{flex:1;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-family:var(--fm);font-size:11px;color:var(--text2);cursor:pointer;text-align:center;transition:all .2s;letter-spacing:1px}
+.tab.active{background:var(--surface2);border-color:var(--accent);color:var(--accent)}
+/* METRICS */
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.mc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;position:relative;overflow:hidden}
+.mc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--text2)}
+.mc.g::before{background:var(--accent3)}.mc.b::before{background:var(--accent2)}.mc.w::before{background:var(--warn)}
+.mn{font-family:var(--fm);font-size:11px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
+.mv{font-family:var(--fh);font-size:32px;color:var(--text);line-height:1}
+.md{font-family:var(--fm);font-size:11px;margin-top:4px}
+.du{color:var(--accent3)}.dd{color:var(--accent2)}.dn{color:var(--text2)}
+/* LAGER BLOCKS */
+.lager{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px}
+.lager-title{font-family:var(--fm);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.lager-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.lager-item{background:var(--surface2);border-radius:8px;padding:10px 8px;text-align:center}
+.li-name{font-family:var(--fm);font-size:9px;color:var(--text2);letter-spacing:1px;margin-bottom:4px}
+.li-val{font-family:var(--fh);font-size:22px;line-height:1}
+.li-d{font-family:var(--fm);font-size:10px;margin-top:3px}
+/* AVG TABLE */
+.avg-table{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.avr{display:grid;grid-template-columns:1fr 1fr 1fr;padding:10px 14px;border-bottom:1px solid var(--border);font-family:var(--fm);font-size:12px}
+.avr:last-child{border-bottom:none}
+.avr-h{color:var(--text2);letter-spacing:1px;font-size:10px}
+/* BURN */
+.burn-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px}
+.burn-bg{background:var(--surface2);border-radius:4px;height:10px;overflow:hidden;margin-bottom:10px}
+.burn-fill{height:100%;border-radius:4px;transition:width 1s ease;background:linear-gradient(90deg,var(--accent3),var(--warn),var(--accent2))}
+.burn-row{display:flex;justify-content:space-between;align-items:center}
+.burn-pct{font-family:var(--fh);font-size:44px}
+.burn-st{font-family:var(--fm);font-size:11px;padding:4px 12px;border-radius:4px;letter-spacing:1px}
+.b-ok{background:rgba(57,255,110,.15);color:var(--accent3)}.b-w{background:rgba(255,184,0,.15);color:var(--warn)}.b-c{background:rgba(255,60,95,.15);color:var(--accent2)}
+.burn-hint{font-size:13px;color:var(--text2);margin-top:8px;line-height:1.5}
+/* SIGNALS */
+.sig{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:8px;animation:slin .35s ease forwards;opacity:0}
+@keyframes slin{from{transform:translateX(-8px);opacity:0}to{transform:translateX(0);opacity:1}}
+.sig-head{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.scode{font-family:var(--fh);font-size:36px;line-height:1}
+.sinfo{flex:1}
+.sname{font-family:var(--fm);font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.sdesc{font-size:14px;color:var(--text2);line-height:1.5}
+.sig-meta{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-top:8px}
+.sconf{font-family:var(--fm);font-size:11px;color:var(--text2)}
+.sconf span{color:var(--text);font-size:14px}
+.sstatus{font-family:var(--fm);font-size:10px;padding:3px 9px;border-radius:4px;letter-spacing:1px}
+.ss-conf{background:rgba(57,255,110,.12);color:var(--accent3)}
+.ss-grow{background:rgba(255,184,0,.12);color:var(--warn)}
+.ss-rec{background:rgba(0,229,255,.12);color:var(--accent)}
+.ss-sig{background:var(--surface2);color:var(--text2)}
+.sdots{display:flex;gap:4px;margin-top:6px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--border)}.dot.on{background:var(--accent)}
+/* CROSS SIGNALS */
+.cross-sig{background:rgba(255,184,0,.06);border:1px solid rgba(255,184,0,.2);border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.cross-title{font-family:var(--fm);font-size:10px;color:var(--warn);letter-spacing:2px;margin-bottom:6px}
+.cross-desc{font-size:13px;color:var(--text2);line-height:1.5}
+/* CREATIVE ACTION */
+.action-card{border-radius:10px;padding:14px 16px;margin-bottom:8px;border:1px solid}
+.action-card.change{background:rgba(255,60,95,.08);border-color:rgba(255,60,95,.3)}
+.action-card.hold{background:rgba(57,255,110,.06);border-color:rgba(57,255,110,.2)}
+.action-card.watch{background:rgba(255,184,0,.06);border-color:rgba(255,184,0,.2)}
+.action-title{font-family:var(--fm);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.action-desc{font-size:14px;line-height:1.6}
+/* EXTRAS */
+.sextras{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.sextra{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:3px 9px;font-family:var(--fm);font-size:10px;color:var(--text2);letter-spacing:1px}
+/* FORECAST */
+.fc-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px}
+.fc-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px}
+.fc-tab{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-family:var(--fm);font-size:11px;color:var(--text2);cursor:pointer;white-space:nowrap;letter-spacing:1px}
+.fc-tab.active{border-color:var(--accent);color:var(--accent);background:rgba(0,229,255,.08)}
+.fc-days{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px}
+.fc-day{background:var(--surface2);border-radius:8px;padding:12px 6px;text-align:center}
+.fc-dl{font-family:var(--fm);font-size:10px;color:var(--text2);letter-spacing:1px;margin-bottom:5px}
+.fc-dv{font-family:var(--fh);font-size:24px}
+.fc-dc{font-family:var(--fm);font-size:10px;margin-top:3px}
+/* HISTORY */
+.hcard{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:8px}
+.hhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.hdate{font-family:var(--fh);font-size:26px}
+.hdel{background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-family:var(--fm);font-size:10px;color:var(--text2);cursor:pointer}
+.hdiag{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.hcode{font-family:var(--fh);font-size:26px;padding:6px 14px;border-radius:8px}
+.hc1{background:rgba(57,255,110,.12);color:var(--accent3)}.hc3{background:rgba(255,60,95,.12);color:var(--accent2)}.hcd{background:var(--surface2);color:var(--warn)}
+.hact{font-family:var(--fm);font-size:11px;color:var(--text2);background:var(--surface2);padding:5px 10px;border-radius:5px;letter-spacing:1px}
+.sms-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.sms-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;cursor:pointer;transition:border-color .2s}
+.sms-box:hover{border-color:var(--accent)}
+.sms-box-label{font-family:var(--fm);font-size:10px;color:var(--text2);letter-spacing:1px;margin-bottom:5px}
+.sms-box-val{font-family:var(--fh);font-size:32px;color:var(--text)}
+hr{border:none;border-top:1px solid var(--border);margin:18px 0}
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(4,9,18,.8);display:none;align-items:flex-end;z-index:999}
+.modal-bg.open{display:flex}
+.modal{width:100%;background:var(--surface);border-radius:20px 20px 0 0;padding:20px;border-top:1px solid var(--border)}
+.modal h3{font-family:var(--fh);font-size:24px;letter-spacing:2px;margin-bottom:14px}
+.big-inp{width:100%;height:76px;border-radius:14px;border:2px solid var(--border);background:var(--bg);color:var(--text);font-size:42px;font-weight:900;text-align:center;font-family:var(--fh);letter-spacing:2px;outline:none}
+.big-inp:focus{border-color:var(--accent)}
+.adj-row{display:flex;gap:6px;margin:12px 0}
+.adj-btn{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 4px;font-family:var(--fm);font-size:13px;color:var(--text);cursor:pointer}
+.mbns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.mbsave{background:var(--accent);color:#000;border:none;border-radius:10px;padding:15px;font-family:var(--fh);font-size:20px;letter-spacing:2px;cursor:pointer}
+.mbclose{background:var(--surface2);color:var(--text2);border:1px solid var(--border);border-radius:10px;padding:15px;font-family:var(--fm);font-size:11px;letter-spacing:1px;cursor:pointer}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* V7.3 FINAL readability boost */
+body{font-size:16.5px}
+.sec{font-size:12px}.btn{font-size:12px}.btn-primary{font-size:26px}
+.info-bar{font-size:13px}.cpill{font-size:13px}.tab,.mem-tab{font-size:12px}
+.mn,.li-name,.avr-h,.action-title,.cross-title,.fc-dl,.sms-box-label{font-size:10.5px}
+.li-val{font-size:24px}.mv{font-size:34px}.scode{font-size:38px}.sname{font-size:13px}.sdesc{font-size:15px}
+.sconf,.sstatus,.sextra,.hact{font-size:11.5px}.action-desc,.cross-desc{font-size:15px}.hdate{font-size:28px}.sms-box-val{font-size:35px}
+.big-inp{font-size:48px}
+
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">TRAFIK PRO<small>META ADS ANALYZER</small></div>
+  <div class="ver">V7.4 CORE FIX</div>
+</div>
+
+<div class="main">
+  <div class="sec">📂 Загрузка CSV</div>
+  <div class="ugrid">
+    <div class="ubox" id="ub-d">
+      <input type="file" accept=".csv" id="fd" onchange="onFile('d',this)">
+      <div class="ubadge a">ДОСТАВКА</div>
+      <div class="uicon">📊</div>
+      <div class="ulabel">Показы · CPM · Freq</div>
+      <div class="uname" id="fn-d">не загружен</div>
+    </div>
+    <div class="ubox" id="ub-r">
+      <input type="file" accept=".csv" id="fr" onchange="onFile('r',this)">
+      <div class="ubadge e">РЕАКЦИЯ</div>
+      <div class="uicon">💬</div>
+      <div class="ulabel">Клики · CPC · SMS</div>
+      <div class="uname" id="fn-r">не загружен</div>
+    </div>
+  </div>
+
+  <div class="info-bar" id="info-bar">Загрузи 2 CSV файла и нажми СОБРАТЬ.</div>
+
+  <div class="brow">
+    <button class="btn btn-build" onclick="buildCsv()">⚙️ СОБРАТЬ</button>
+    <button class="btn btn-import" onclick="importHistory(false)">💾 В ИСТОРИЮ</button>
+    <button class="btn btn-mem" onclick="importHistory(true)">🆕 ТОЛЬКО НОВЫЕ</button>
+    <button class="btn btn-clear" onclick="clearCsv()">🗑 СТЕРЕТЬ CSV</button>
+  </div>
+
+  <button class="btn-primary" id="btn-analyze" onclick="analyze()" disabled>АНАЛИЗИРОВАТЬ</button>
+
+  <div class="counts">
+    <div class="cpill">История: <span id="hcnt">0</span> дн.</div>
+    <div class="cpill">CSV: <span id="ccnt">0</span> дн.</div>
+    <button class="btn btn-clear" style="padding:6px 12px;font-size:10px" onclick="clearAll()">ОЧИСТИТЬ ВСЁ</button>
+  </div>
+
+  <!-- РЕЗУЛЬТАТЫ -->
+  <div id="results">
+    <div class="tabs">
+      <div class="tab active" onclick="swTab('A',this)">⚓ ЯКОРЬ</div>
+      <div class="tab" onclick="swTab('E',this)">🚀 РАСШИР.</div>
+      <div class="tab" onclick="swTab('T',this)">📊 ИТОГО</div>
+    </div>
+
+    <div class="sec">🚚 Лагерь Доставки</div>
+    <div class="lager" id="lager-d"></div>
+
+    <div class="sec">💬 Лагерь Реакции</div>
+    <div class="lager" id="lager-r"></div>
+
+    <div class="sec">📊 Метрики vs база 7 дней</div>
+    <div class="avg-table" id="avgt"></div>
+
+    <hr>
+    <div class="sec">🔥 Creative Burn Index</div>
+    <div class="burn-card">
+      <div class="burn-bg"><div class="burn-fill" id="bfill" style="width:0%"></div></div>
+      <div class="burn-row">
+        <div class="burn-pct" id="bpct">0%</div>
+        <div class="burn-st" id="bst">—</div>
+      </div>
+      <div class="burn-hint" id="bhint"></div>
+    </div>
+
+    <hr>
+    <div class="sec">🎯 Диагноз</div>
+    <div id="siglist"></div>
+
+    <div class="sec">⚡ Пересечения лагерей</div>
+    <div id="crosslist"></div>
+
+    <hr>
+    <div class="sec">🎨 Рекомендация по креативу</div>
+    <div id="actioncard"></div>
+
+    <hr>
+    <div class="sec">🔮 Прогноз 3 дня</div>
+    <div class="fc-card">
+      <div class="fc-tabs">
+        <div class="fc-tab active" onclick="swFc('cpm',this)">CPM</div>
+        <div class="fc-tab" onclick="swFc('ctr',this)">CTR</div>
+        <div class="fc-tab" onclick="swFc('cr',this)">CR</div>
+        <div class="fc-tab" onclick="swFc('cpc',this)">CPC</div>
+        <div class="fc-tab" onclick="swFc('sms',this)">SMS</div>
+      </div>
+      <div class="fc-days" id="fcdays"></div>
+    </div>
+  </div>
+
+  <!-- ИСТОРИЯ -->
+  <div class="sec" style="margin-top:24px">🕓 История дней</div>
+  <div class="mem-tabs">
+    <div class="mem-tab active" onclick="swMem('short',this)">📅 Короткая (7 дн.)</div>
+    <div class="mem-tab" onclick="swMem('long',this)">📆 Длинная (90 дн.)</div>
+  </div>
+  <div id="histlist"></div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-bg" id="cbg" onclick="if(event.target===this)closeConfirm()">
+  <div class="modal">
+    <h3 style="font-size:20px;margin-bottom:12px">⚠️ Подтверждение</h3>
+    <div id="confirm-msg" style="font-size:14px;color:var(--text2);margin-bottom:16px;line-height:1.5"></div>
+    <div class="mbns">
+      <button class="mbclose" onclick="closeConfirm()">ОТМЕНА</button>
+      <button style="background:var(--accent2);color:#fff;border:none;border-radius:10px;padding:15px;font-family:var(--fh);font-size:18px;letter-spacing:2px;cursor:pointer" id="confirm-ok">ДА, СТЕРЕТЬ</button>
+    </div>
+  </div>
+</div>
+
+<!-- SMS MODAL -->
+<div class="modal-bg" id="mbg" onclick="if(event.target===this)closeM()">
+  <div class="modal">
+    <h3 id="mtitle">SMS</h3>
+    <input class="big-inp" id="minp" inputmode="numeric" pattern="[0-9]*">
+    <div class="adj-row">
+      <button class="adj-btn" onclick="adj(-10)">-10</button>
+      <button class="adj-btn" onclick="adj(-5)">-5</button>
+      <button class="adj-btn" onclick="adj(-1)">-1</button>
+      <button class="adj-btn" onclick="adj(+1)">+1</button>
+      <button class="adj-btn" onclick="adj(+5)">+5</button>
+      <button class="adj-btn" onclick="adj(+10)">+10</button>
+    </div>
+    <div class="mbns">
+      <button class="mbclose" onclick="closeM()">ЗАКРЫТЬ</button>
+      <button class="mbsave" onclick="saveM()">СОХРАНИТЬ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONSTANTS ────────────────────────────────────────────
+const LS_H='tp_h_v74_core_fix', LS_S='tp_s_v74_core_fix';
+const DA={date:['Дата начала отчетности','Дата','date'],ad:['Название объявления','ad name','ad'],spend:['Потраченная сумма (EUR)','Потраченная сумма (USD)','Потраченная сумма','spend','cost'],impressions:['Показы','impressions','Показ рекламы'],reach:['Охват','reach'],frequency:['Частота','frequency'],cpm:['CPM (цена за 1 000 показов) (EUR)','CPM (цена за 1 000 показов) (USD)','CPM (цена за 1 000 показов)','CPM','cpm'],ctr_all:['CTR (все)','CTR','ctr'],sms:['Сообщения','messages','sms']};
+const RA={date:['Дата начала отчетности','Дата','date'],ad:['Название объявления','ad name','ad'],clicks:['Клики по ссылке','Link Clicks','Клики','clicks'],ctr_link:['CTR (отношение кликов к показам)','CTR link','ctr link'],cpc:['CPC (цена за клик по ссылке) (EUR)','CPC (цена за клик по ссылке) (USD)','CPC (цена за клик по ссылке)','CPC','cpc'],spend:['Потраченная сумма (EUR)','Потраченная сумма (USD)','Потраченная сумма','spend'],sms:['Сообщения','messages','sms']};
+
+const SI={
+  D1:{name:'Зона силы',       color:'#39ff6e',desc:'CTR растёт, CPC падает, бюджет стабилен.',      action:'Оставить оба — масштабируй бюджет'},
+  D2:{name:'Давление аукциона',color:'#ffb800',desc:'CPM↑ Охват↓ CPC↑ — аукцион давит.',           action:'Наблюдать, не менять ставки резко'},
+  D3:{name:'Перегрев креатива',color:'#ff3c5f',desc:'Частота высокая, CTR и охват падают.',         action:'Менять креатив — аудитория устала'},
+  D4:{name:'Холодная аудитория',color:'#00e5ff',desc:'CPM падает, охват растёт, CTR падает.',       action:'Обновить подачу — новая аудитория холодная'},
+  D5:{name:'Проблема хука',   color:'#ff7c3c', desc:'Низкая частота, CTR↓ CPC↑ — хук не цепляет.',action:'Сменить первые 3 секунды креатива'},
+  D6:{name:'Проблема воронки',color:'#c855ff', desc:'Клики стабильны, но CR падает.',              action:'Проверить Messenger / лендинг / оффер'},
+  D7:{name:'Перераспред. бюджета',color:'#ffb800',desc:'Бюджет уходит в один сегмент.',            action:'Проверить лимиты — выровнять бюджет'},
+  D8:{name:'Стабильность / мало данных',color:'#8888a0',desc:'Нет подтверждённого сигнала: либо база формируется, либо метрики стабильны.',action:'Не менять ничего — наблюдай'},
+  D8X:{name:'Нестандартный сигнал',color:'#ffb800',desc:'Есть сильное отклонение, но картина неоднозначная. Не шум, но и не чёткий диагноз.',action:'Наблюдай 1-2 дня — сигнал формируется'},
+};
+
+// ── STATE ─────────────────────────────────────────────────
+let dTxt='',rTxt='',csvDays=[],histDays=lj(LS_H,[]),smsMap=lj(LS_S,{}),smsCtx=null;
+let curTab='A',curFc='cpm',curMem='short',lastF={};
+
+renderHist(); updCnt();
+
+// ── FILE ──────────────────────────────────────────────────
+function onFile(t,inp){const f=inp.files[0];if(!f)return;f.text().then(tx=>{if(t==='d'){dTxt=tx;document.getElementById('fn-d').textContent=f.name;document.getElementById('ub-d').classList.add('loaded');}else{rTxt=tx;document.getElementById('fn-r').textContent=f.name;document.getElementById('ub-r').classList.add('loaded');}setInfo((dTxt?'✓ ДОСТАВКА':'— ДОСТАВКА')+'  '+(rTxt?'✓ РЕАКЦИЯ':'— РЕАКЦИЯ'),dTxt&&rTxt?'ok':'wn');});}
+
+// ── CSV PARSE ─────────────────────────────────────────────
+function detDelim(tx){const l=tx.replace(/\r/g,'').split('\n').find(Boolean)||'';return(l.match(/;/g)||[]).length>(l.match(/,/g)||[]).length?';':',';}
+function parseCsv(tx){const d=detDelim(tx);const lines=tx.replace(/\r/g,'').split('\n').filter(Boolean);if(!lines.length)return[];const rows=[];for(const line of lines){let row=[],cell='',q=false;for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'){if(q&&line[i+1]==='"'){cell+='"';i++;}else q=!q;}else if(c===d&&!q){row.push(cell);cell='';}else cell+=c;}row.push(cell);rows.push(row);}const h=rows[0].map(x=>x.trim());return rows.slice(1).map(r=>{const o={};h.forEach((k,i)=>o[k]=(r[i]??'').trim());return o;});}
+function nk(s){return String(s||'').replace(/\u00a0/g,' ').trim().toLowerCase().replace(/\s+/g,' ').replace(/[()]/g,'').replace(/€/g,'eur').replace(/\$/g,'usd');}
+function pick(row,als){const nm={};Object.keys(row).forEach(k=>nm[nk(k)]=row[k]);for(const a of als){if(a in row)return row[a];const v=nm[nk(a)];if(v!==undefined)return v;}return'';}
+function detAd(n){const s=String(n||'').trim().toUpperCase();if(s.includes('ЯКОР')||s.includes('JAKOR')||s==='A'||s.endsWith(' A'))return'A';if(s.includes('РАСШИР')||s.includes('RASH')||s.includes('RASS')||s==='E'||s.endsWith(' E'))return'E';return null;}
+function tn(v){if(v===undefined||v===null||v==='')return 0;if(typeof v==='number')return isFinite(v)?v:0;const n=parseFloat(String(v).replace(/\u00a0/g,'').replace(/\s/g,'').replace(',','.'));return isFinite(n)?n:0;}
+function mapD(rows){return rows.map(r=>({date:pick(r,DA.date),ad:detAd(pick(r,DA.ad)),spend:tn(pick(r,DA.spend)),impressions:tn(pick(r,DA.impressions)),reach:tn(pick(r,DA.reach)),frequency:tn(pick(r,DA.frequency)),cpm:tn(pick(r,DA.cpm)),ctr_all:tn(pick(r,DA.ctr_all)),sms_csv:tn(pick(r,DA.sms))})).filter(x=>x.date&&x.ad);}
+function mapR(rows){return rows.map(r=>({date:pick(r,RA.date),ad:detAd(pick(r,RA.ad)),clicks:tn(pick(r,RA.clicks)),ctr_link:tn(pick(r,RA.ctr_link)),cpc:tn(pick(r,RA.cpc)),spend:tn(pick(r,RA.spend)),sms_csv:tn(pick(r,RA.sms))})).filter(x=>x.date&&x.ad);}
+function mergeCsv(d,r){const bd={};function ens(date){if(!bd[date])bd[date]={date,A:{impressions:0,reach:0,spend:0,clicks:0,frequency:0,cpm:0,ctr_all:0,ctr_link:0,cpc:0,sms:0,sms_csv:0},E:{impressions:0,reach:0,spend:0,clicks:0,frequency:0,cpm:0,ctr_all:0,ctr_link:0,cpc:0,sms:0,sms_csv:0}};return bd[date];}d.forEach(row=>{const day=ens(row.date);day[row.ad]={...day[row.ad],...row};});r.forEach(row=>{const day=ens(row.date);day[row.ad]={...day[row.ad],...row};});const days=Object.values(bd).sort((a,b)=>a.date.localeCompare(b.date));days.forEach(day=>{const ov=smsMap[day.date]||{};day.A.sms=ov.A!==undefined?tn(ov.A):Math.max(tn(day.A.sms_csv),tn(day.A.sms));day.E.sms=ov.E!==undefined?tn(ov.E):Math.max(tn(day.E.sms_csv),tn(day.E.sms));});return days;}
+
+function buildCsv(){
+  if(!dTxt||!rTxt){setInfo('Нужно загрузить оба CSV!','err');return;}
+  const dRaw=parseCsv(dTxt); const rRaw=parseCsv(rTxt);
+  const dr=mapD(dRaw); const rr=mapR(rRaw);
+  csvDays=mergeCsv(dr,rr);
+
+  // ── CSV Валидация ──────────────────────────────────────────
+  // Считаем до фильтрации — из сырых строк
+  const dTotal=dRaw.length; const rTotal=rRaw.length;
+  let rowsA=0,rowsE=0;
+  dr.forEach(r=>{if(r.ad==='A')rowsA++;else if(r.ad==='E')rowsE++;});
+  let rxA=0,rxE=0;
+  rr.forEach(r=>{if(r.ad==='A')rxA++;else if(r.ad==='E')rxE++;});
+  const dLost=dTotal-(rowsA+rowsE);
+  const rLost=rTotal-(rxA+rxE);
+
+  let hasClicks=false,hasImpr=false,hasSpend=false;
+  csvDays.forEach(d=>{
+    if(tn(d.A.clicks)+tn(d.E.clicks)>0)hasClicks=true;
+    if(tn(d.A.impressions)+tn(d.E.impressions)>0)hasImpr=true;
+    if(tn(d.A.spend)+tn(d.E.spend)>0)hasSpend=true;
+  });
+  const tc=csvDays.reduce((s,d)=>s+tn(d.A.clicks)+tn(d.E.clicks),0);
+  const ts=csvDays.reduce((s,d)=>s+tn(d.A.sms)+tn(d.E.sms),0);
+  updCnt();
+
+  let warnings=[];
+  if(rowsA===0) warnings.push('⚠️ Якорь (JAKOR) не найден — проверь название');
+  if(rowsE===0) warnings.push('⚠️ Расширитель (RASSHIRITEL) не найден — проверь название');
+  if(dLost>0)   warnings.push(`⚠️ Доставка: ${dLost} из ${dTotal} строк не распознано`);
+  if(rLost>0)   warnings.push(`⚠️ Реакция: ${rLost} из ${rTotal} строк не распознано`);
+  if(!hasClicks) warnings.push('⚠️ Клики = 0 — нет данных реакции');
+  if(!hasImpr)   warnings.push('⚠️ Показы = 0 — нет данных доставки');
+  if(!hasSpend)  warnings.push('⚠️ Расход = 0 — нет данных бюджета');
+
+  // Блокировка если потеряно >50% строк
+  const totalRecognized=rowsA+rowsE+rxA+rxE;
+  const totalAll=dTotal+rTotal;
+  if(totalAll>0&&totalRecognized<totalAll*0.5){
+    setInfo(`🚫 ОШИБКА: распознано только ${Math.round(totalRecognized/totalAll*100)}% строк (${totalRecognized} из ${totalAll}). Проверь названия объявлений — должны содержать JAKOR и RASSHIRITEL.`,'err');
+    document.getElementById('btn-analyze').disabled=true;
+    return;
+  }
+  if(warnings.length){
+    setInfo(`✓ ${csvDays.length} дней | A: ${rowsA+rxA} стр. | E: ${rowsE+rxE} стр. | ${warnings.join(' · ')}`, 'wn');
+  } else {
+    setInfo(`✓ ${csvDays.length} дней | A: ${rowsA+rxA} стр. | E: ${rowsE+rxE} стр. | Клики: ${fi(tc)} | SMS: ${fi(ts)}`, 'ok');
+  }
+  document.getElementById('btn-analyze').disabled=csvDays.length===0;
+}
+function importHistory(only){if(!csvDays.length){setInfo('Сначала собери CSV','err');return;}const map=new Map(histDays.map(d=>[d.date,d]));csvDays.forEach(d=>{if(only&&map.has(d.date))return;map.set(d.date,JSON.parse(JSON.stringify(d)));});histDays=[...map.values()].sort((a,b)=>a.date.localeCompare(b.date)).slice(-90);sj(LS_H,histDays);renderHist();updCnt();setInfo(`✓ Импорт. Дней в истории: ${histDays.length}.`,'ok');}
+function clearCsv(){dTxt='';rTxt='';csvDays=[];updCnt();setInfo('CSV очищен.','wn');}
+function clearAll(){showConfirm('Стереть всю историю, SMS и CSV? Это нельзя отменить.',()=>{
+  try{
+    Object.keys(localStorage).forEach(k=>{ if(k.startsWith('tp_')) localStorage.removeItem(k); });
+    localStorage.removeItem(LS_H); localStorage.removeItem(LS_S);
+  }catch(e){}
+  histDays=[]; smsMap={}; csvDays=[]; dTxt=''; rTxt=''; lastF={};
+  try{document.getElementById('fd').value='';document.getElementById('fr').value='';}catch(e){}
+  ['ub-d','ub-r'].forEach(id=>{const el=document.getElementById(id); if(el) el.classList.remove('loaded');});
+  const fnd=document.getElementById('fn-d'), fnr=document.getElementById('fn-r');
+  if(fnd) fnd.textContent='не загружен'; if(fnr) fnr.textContent='не загружен';
+  const res=document.getElementById('results'); if(res) res.style.display='none';
+  closeConfirm();
+  renderHist(); updCnt(); setInfo('✓ Всё очищено: история, SMS и CSV удалены.','ok');
+});}
+function delDay(date){histDays=histDays.filter(d=>d.date!==date);sj(LS_H,histDays);renderHist();updCnt();}
+
+// ── METRICS CALC ──────────────────────────────────────────
+function gseg(day,t){
+  if(t==='T')return{impressions:tn(day.A.impressions)+tn(day.E.impressions),reach:tn(day.A.reach)+tn(day.E.reach),spend:tn(day.A.spend)+tn(day.E.spend),clicks:tn(day.A.clicks)+tn(day.E.clicks),sms:tn(day.A.sms)+tn(day.E.sms),frequency:(tn(day.A.frequency)+tn(day.E.frequency))/2||0,spendA:tn(day.A.spend),spendE:tn(day.E.spend)};
+  return{impressions:tn(day[t].impressions),reach:tn(day[t].reach),spend:tn(day[t].spend),clicks:tn(day[t].clicks),sms:tn(day[t].sms),frequency:tn(day[t].frequency),spendA:tn(day.A.spend),spendE:tn(day.E.spend)};
+}
+function calc(raw){
+  const cpm=raw.impressions>0?raw.spend/raw.impressions*1000:0;
+  const ctr=raw.impressions>0?raw.clicks/raw.impressions*100:0;
+  const cpc=raw.clicks>0?raw.spend/raw.clicks:0;
+  const cr=raw.clicks>0?raw.sms/raw.clicks*100:0;
+  const freq=raw.reach>0?raw.impressions/raw.reach:raw.frequency||0;
+  return{...raw,cpm,ctr,cpc,cr,freq};
+}
+function a3(days,idx,get){const p=days.slice(Math.max(0,idx-3),idx);if(!p.length)return 0;return p.reduce((s,x)=>s+get(x),0)/p.length;}
+function pct(t,a){return(a&&isFinite(a))?(t-a)/a*100:0;}
+// stab теперь принимает порог как параметр (по умолчанию 15)
+function stab(d,t=15){return Math.abs(d)<=t;}
+
+
+function isRealNoise(m, f){
+  // Реальный шум: совсем мало данных или ещё нет базы для сравнения.
+  // Важно: 9/6 SMS — это НЕ мало данных, это уже рабочий объём.
+  if(!f || !f.hasAvg) return true;
+  const sms = tn(m.sms);
+  const clicks = tn(m.clicks);
+  if(sms < 3) return true;
+  if(clicks > 0 && clicks < 20 && sms < 5) return true;
+  return false;
+}
+
+// ── ЕДИНОЕ ЯДРО УСЛОВИЙ ДИАГНОЗА ─────────────────────────
+// Используется и в calcCode и в _freeze — единственный источник правды
+function _diagCore(m,d,dSpA,dSpE,dSpT){
+  // D3 — перегрев: частота высокая + падение CTR/охвата/кликов
+  if((m.freq>=2.8&&d.ctr<=-18&&d.reach<=-15)||(m.freq>=3.1&&d.ctr<=-12&&d.clicks<=-10)) return 'D3';
+
+  // D7 — бюджет ушёл в один сегмент и результат не растёт
+  const budgetShiftA=dSpA>=29.5&&dSpE<=-29.5;
+  const budgetShiftE=dSpE>=29.5&&dSpA<=-29.5;
+  const budgetShift=(budgetShiftA||budgetShiftE)&&stab(dSpT,22);
+  const outputNotGrowing=!(d.sms>=15||d.cr>=15);
+  if(budgetShift&&outputNotGrowing) return 'D7';
+
+  // D6 — воронка: клики есть/стабильны, но CR/SMS падают
+  if(m.clicks>=5&&d.cr<=-20&&(d.sms<=-12||m.sms<=2)) return 'D6';
+
+  // D4 — холодная новая аудитория
+  if(d.cpm<=-10&&d.reach>=10&&d.ctr<=-15) return 'D4';
+
+  // D5 — хук
+  if(m.freq<=2.1&&d.ctr<=-18&&d.cpc>=15&&stab(d.cpm,22)) return 'D5';
+
+  // D2 — давление аукциона
+  if(d.cpm>=18&&d.reach<=-8&&d.cpc>=8) return 'D2';
+
+  // D1 — зона силы: интерес растёт, цена клика падает, результат не проседает
+  const volumeOk=(m.sms>=5||m.clicks>=40);
+  const resultOk=(d.sms>=-8||d.cr>=-5);
+  const efficiencyOk=(d.cpc<=-8||d.cr>=8||d.sms>=8);
+  const deliveryOk=stab(dSpT,22)||d.sms>=8||d.clicks>=8;
+  const noHiddenBurn=!(m.freq>=2.8&&d.reach<=-12);
+  if(volumeOk&&d.ctr>=8&&efficiencyOk&&resultOk&&deliveryOk&&noHiddenBurn) return 'D1';
+
+  // D8X — сильное, но нераспознанное отклонение. Не путать со стабильным D8.
+  const totalSignal=Math.abs(d.ctr)>22||Math.abs(d.cpm)>22||Math.abs(d.cpc)>22||Math.abs(d.cr)>22||Math.abs(d.reach)>22||Math.abs(d.sms)>30;
+  return totalSignal?'D8X':'D8';
+}
+
+// ── FEATURE BUILD — ФИКСИРОВАННАЯ БАЗА 7 ДНЕЙ ────────────
+// База = среднее первых 7 дней. Не двигается. Не замораживается.
+// Это боевая стабильная версия (94% точность на тестах)
+function buildF(days,st){
+  const keys=['cpm','ctr','cpc','cr','freq','reach','clicks','sms','spend','spendA','spendE'];
+  const BASE=7;
+
+  function getM(d){
+    const spA=tn(d.A&&d.A.spend); const spE=tn(d.E&&d.E.spend);
+    const m=calc(gseg(d,st)); m.spendA=spA; m.spendE=spE; return m;
+  }
+
+  function avgFrom(arr){
+    const out={};
+    keys.forEach(k=>{
+      const vals=arr.map(d=>{
+        const spA=tn(d.A&&d.A.spend); const spE=tn(d.E&&d.E.spend);
+        if(k==='spendA') return spA;
+        if(k==='spendE') return spE;
+        const m=calc(gseg(d,st)); m.spendA=spA; m.spendE=spE;
+        return m[k]||0;
+      });
+      out[k]=vals.length?vals.reduce((s,v)=>s+v,0)/vals.length:0;
+    });
+    return out;
+  }
+
+  // Фиксированная база 7 дней для боевой стабильности.
+  // Но первые 4–7 дни не превращаем в слепой D8: временно сравниваем с предыдущими 3 днями.
+  const fixedBase = days.length>=BASE ? avgFrom(days.slice(0,BASE)) : null;
+
+  return days.map((d,i)=>{
+    const m=getM(d);
+    let baseAvg=null, baseMode='none';
+    if(fixedBase && i>=BASE){
+      baseAvg=fixedBase; baseMode='base7';
+    }else if(i>=3){
+      baseAvg=avgFrom(days.slice(i-3,i)); baseMode='avg3_start';
+    }
+
+    const hasAvg=!!baseAvg;
+    const delta={};
+    keys.forEach(k=>{
+      const val=k==='spendA'?m.spendA:k==='spendE'?m.spendE:(m[k]!==undefined?m[k]:0);
+      delta[k]=hasAvg?pct(val,baseAvg[k]):0;
+    });
+
+    return{...d,m,avg:baseAvg||{},delta,hasAvg,baseMode};
+  });
+}
+// ── AUCTION RESULT ────────────────────────────────────────
+function getAuctionResult(f){
+  if(!f.hasAvg) return null;
+  const d=f.delta;
+  if(d.cpm<=-10&&d.reach>=10&&d.ctr>=5)
+    return{code:'WIN',label:'🏆 Аукцион выигран',desc:'CPM падает, охват растёт — алгоритм работает в твою пользу.',action:'Продолжай, масштабируй',color:'#39ff6e'};
+  if(d.cpm>=25&&d.reach<=-10&&d.ctr<=-10)
+    return{code:'LOSS',label:'📉 Аукцион проигран',desc:'CPM вырос >25%, охват и CTR падают. Конкуренты перебивают ставки.',action:'Меняй аудиторию или ставку',color:'#ff3c5f'};
+  if(d.cpm>=15)
+    return{code:'FIGHT',label:'⚔️ Борьба в аукционе',desc:'CPM растёт умеренно. Конкуренция есть, но держишься.',action:'Наблюдай 1-2 дня',color:'#ffb800'};
+  return null;
+}
+
+// ── SIGNAL LOGIC ──────────────────────────────────────────
+function calcCode(f){
+  const d=f.delta; const m=f.m;
+  if(isRealNoise(m,f)) return 'D8';
+
+  const dSpA=d.spendA??0; const dSpE=d.spendE??0; const dSpT=d.spend??0;
+  return _diagCore(m,d,dSpA,dSpE,dSpT);
+}
+
+function sigWeakening(c,f,p){
+  if(!p||!f.hasAvg||!p.hasAvg) return false;
+  const d=f.delta, pd=p.delta;
+  if(c==='D3') return d.ctr>pd.ctr+6 || d.reach>pd.reach+6;
+  if(c==='D2') return d.cpm<pd.cpm-6 || d.cpc<pd.cpc-6;
+  if(c==='D6') return d.cr>pd.cr+6 || d.sms>pd.sms+8;
+  if(c==='D5') return d.ctr>pd.ctr+6 || d.cpc<pd.cpc-6;
+  if(c==='D7') return Math.abs(d.spendA-d.spendE)<Math.abs(pd.spendA-pd.spendE)-10;
+  if(c==='D1') return d.sms<pd.sms-10 || d.cr<pd.cr-6;
+  return false;
+}
+
+function calcConfidence(f,status){
+  if(!f.hasAvg) return 45;
+  const c=f.mainCode, d=f.delta, m=f.m;
+
+  let base = c==='D8' ? 58 : c==='D8X' ? 55 : 56;
+
+  // Сила отклонений
+  const deltaPower = (
+    Math.min(Math.abs(d.ctr),40)*0.22 +
+    Math.min(Math.abs(d.cpc),40)*0.18 +
+    Math.min(Math.abs(d.cr),45)*0.22 +
+    Math.min(Math.abs(d.sms),50)*0.22 +
+    Math.min(Math.abs(d.cpm),35)*0.10 +
+    Math.min(Math.abs(d.reach),35)*0.06
+  );
+  base += deltaPower * 0.55;
+
+  // Объём данных
+  if(m.sms>=8) base+=7;
+  else if(m.sms>=5) base+=4;
+  else if(m.sms<3) base-=18;
+
+  if(m.clicks>=80) base+=5;
+  else if(m.clicks>=40) base+=3;
+  else if(m.clicks>0 && m.clicks<20) base-=7;
+
+  // Подтверждение по дням
+  if(status.includes('Подтверждён')) base+=16;
+  else if(status.includes('Усиливается')) base+=8;
+  else if(status.includes('Первый')) base-=5;
+  else if(status.includes('Ослабевает')) base-=14;
+  else if(status.includes('Восстановлен')) base+=5;
+
+  // D8 не должен выглядеть как сильный диагноз
+  if(c==='D8') base=Math.min(base,62);
+  if(c==='D8X') base=Math.min(base,68);
+
+  return Math.min(95,Math.max(40,Math.round(base)));
+}
+
+function calcSigs(features){
+  features.forEach((f,i)=>{
+    f.mainCode=calcCode(f);
+    // Burn Index участвует в диагнозе: если 3–5 дней растёт риск выгорания — это D3.
+    const burnNow=calcBurn(features.slice(0,i+1));
+    f.burnScore=burnNow.score||0;
+    if(f.hasAvg && f.burnScore>=70 && f.mainCode!=='D6' && f.mainCode!=='D7'){
+      f.mainCode='D3';
+      f.burnForecast=burnNow.forecast;
+    }
+    f.auction=getAuctionResult(f);
+  });
+
+  features.forEach((f,i)=>{
+    const c=f.mainCode;
+    const p1=i>0?features[i-1]:null,p2=i>1?features[i-2]:null;
+    let status='Шум / стабильность';
+
+    if(c==='D8X'){
+      status='⚠️ Требует наблюдения';
+    } else if(c!=='D8'){
+      if(p1&&p1.mainCode===c&&sigWeakening(c,f,p1)) status='🧊 Ослабевает — не усиливай';
+      else if(p1&&p2&&p1.mainCode===c&&p2.mainCode===c) status='✅ Подтверждён — действуй';
+      else if(p1&&p1.mainCode===c) status='⚡ Усиливается — готовься';
+      else if(c==='D1'&&p1&&['D2','D3','D4','D5','D6','D7'].includes(p1.mainCode)) status='🔄 Восстановлен';
+      else status='👁 Первый сигнал — наблюдай';
+    } else {
+      if(!f.hasAvg) status='📊 Формируется база';
+      else if(isRealNoise(f.m,f)) status='📊 Мало данных';
+      else status='✅ Стабильно — не трогай';
+    }
+
+    const conf=calcConfidence(f,status);
+    const str=conf>=85?3:conf>=70?2:1;
+    f.sig={code:c,status,conf,str};
+  });
+  return features;
+}
+
+// ── CROSS SIGNALS (пересечения лагерей) ───────────────────
+function calcCross(f){
+  if(!f.hasAvg) return [];
+  const d=f.delta; const m=f.m;
+  const crosses=[];
+
+  // CPM↑ (доставка) + CR↓ (реакция) → двойное давление
+  if(d.cpm>=15 && d.cr<=-15)
+    crosses.push({title:'⚡ Двойное давление',desc:'CPM растёт (аукцион давит) + CR падает (воронка слабеет). Проверь и ставки и Messenger.'});
+
+  // Reach↑ (доставка) + CTR↓ (реакция) → новая холодная аудитория
+  if(d.reach>=15 && d.ctr<=-15)
+    crosses.push({title:'❄️ Расширение в холодную',desc:'Охват растёт но CTR падает — алгоритм показывает рекламу новой холодной аудитории. Хук не работает на них.'});
+
+  // Freq↑ высокая (доставка) + clicks↓ (реакция) → выгорание
+  if(m.freq>=2.5 && d.clicks<=-20)
+    crosses.push({title:'🔥 Признаки выгорания',desc:'Высокая частота + падение кликов. Аудитория видела рекламу слишком много раз.'});
+
+  // CPM↓ (доставка) + CPC↑ (реакция) → аудитория дешёвая но не кликает
+  if(d.cpm<=-10 && d.cpc>=15)
+    crosses.push({title:'🎯 Дешёвые показы — дорогие клики',desc:'CPM падает (алгоритм находит дешёвую аудиторию) но CPC растёт — эта аудитория не кликает. Проблема в таргетинге.'});
+
+  // spend стаб (доставка) + SMS↓ (реакция) → деньги идут, результата нет
+  if(stab(d.spend) && d.sms<=-25)
+    crosses.push({title:'💸 Бюджет работает — SMS нет',desc:'Расход стабилен но заявки падают. Проблема в воронке или оффере, не в алгоритме.'});
+
+  return crosses;
+}
+
+// ── CREATIVE ACTION (логика замены) ───────────────────────
+function calcAction(featA, featE, crosses=[]){
+  const fA=featA[featA.length-1];
+  const fE=featE[featE.length-1];
+  if(!fA||!fE) return null;
+
+  const cA=fA.mainCode, cE=fE.mainCode;
+  const dA=fA.delta, dE=fE.delta;
+  const mA=fA.m, mE=fE.m;
+  const stA=fA.sig&&fA.sig.status||'';
+  const stE=fE.sig&&fE.sig.status||'';
+  const confirmed=s=>s.includes('Подтверждён');
+  const growing=s=>s.includes('Усиливается');
+
+  // ── Главная проблема дня ──────────────────────────────────
+  const mainSig=cA!=='D8'?cA:cE;
+  const problemMap={
+    D3:'🔥 ПРОБЛЕМА: Перегрев — аудитория устала от креатива',
+    D2:'⚔️ ПРОБЛЕМА: Давление аукциона — конкуренты бьют ставки',
+    D4:'❄️ ПРОБЛЕМА: Холодная аудитория — новые люди не реагируют',
+    D5:'🎯 ПРОБЛЕМА: Хук не работает — первые 3 секунды не цепляют',
+    D6:'📩 ПРОБЛЕМА: Воронка сломана — люди кликают но не пишут',
+    D7:'🔄 ПРОБЛЕМА: Бюджет перераспределён — алгоритм оптимизирует',
+    D1:'✅ СЕГОДНЯ: Зона силы — всё работает хорошо',
+    D8:'📊 СЕГОДНЯ: Стабильно — явных проблем нет',
+    D8X:'⚠️ ПРОБЛЕМА: Нестандартный сигнал — есть сильное отклонение, но диагноз ещё не сформирован',
+  };
+  const mainProblem=problemMap[mainSig]||'';
+
+  // ── Победитель дня A/E по CR + SMS + cost per SMS ────────
+  const crA=mA.cr||0; const crE=mE.cr||0;
+  const smsA=mA.sms||0; const smsE=mE.sms||0;
+  const ctrA=mA.ctr||0; const ctrE=mE.ctr||0;
+  const spendA=mA.spend||0; const spendE=mE.spend||0;
+  const costSmsA=smsA>0?spendA/smsA:null;
+  const costSmsE=smsE>0?spendE/smsE:null;
+  let winner=null;
+  const totalSms=smsA+smsE;
+  if(totalSms>=5){
+    const scoreA=crA*0.6+smsA*0.4; const scoreE=crE*0.6+smsE*0.4;
+    let costWarn=null;
+    // Предупреждение если победитель по объёму дороже по цене SMS
+    if(scoreA>scoreE*1.1&&costSmsA&&costSmsE&&costSmsA>costSmsE*1.3)
+      costWarn=`Но E дешевле по заявке (A: €${costSmsA.toFixed(2)} · E: €${costSmsE.toFixed(2)}) — не отключай резко`;
+    else if(scoreE>scoreA*1.1&&costSmsA&&costSmsE&&costSmsE>costSmsA*1.3)
+      costWarn=`Но A дешевле по заявке (A: €${costSmsA.toFixed(2)} · E: €${costSmsE.toFixed(2)}) — не отключай резко`;
+    if(scoreA>scoreE*1.1) winner={seg:'A',label:'⚓ Якорь (A)',
+      reason:`CR: ${crA.toFixed(1)}% · SMS: ${fi(smsA)}${costSmsA?` · €${costSmsA.toFixed(2)}/SMS`:''}`,costWarn};
+    else if(scoreE>scoreA*1.1) winner={seg:'E',label:'🚀 Расширитель (E)',
+      reason:`CR: ${crE.toFixed(1)}% · SMS: ${fi(smsE)}${costSmsE?` · €${costSmsE.toFixed(2)}/SMS`:''}`,costWarn};
+    else winner={seg:'=',label:'Равные',reason:'CR и SMS примерно одинаковые'};
+  } else if(totalSms>0){
+    winner={seg:'?',label:'Мало данных',reason:`Всего ${totalSms} SMS — нужно минимум 5 для вывода`};
+  }
+
+  // ── Burn A/E для итогового блока ─────────────────────────
+  const burnA=calcBurn(featA); const burnE=calcBurn(featE);
+  const burnInfo=`Burn: ⚓A ${burnA.score}% · 🚀E ${burnE.score}%${burnA.score>burnE.score+20?' — горит Якорь':burnE.score>burnA.score+20?' — горит Расширитель':''}`;
+
+  // CR/SMS предупреждение
+  let crWarning=null;
+  if(ctrE>ctrA*1.1&&crA>crE*1.15&&smsA>smsE)
+    crWarning='⚠️ CTR расширителя выше, но якорь даёт больше заявок. Не режь якорь по CTR!';
+  if(ctrA>ctrE*1.1&&crE>crA*1.15&&smsE>smsA)
+    crWarning='⚠️ CTR якоря выше, но расширитель даёт больше заявок. Смотри на CR, не CTR!';
+
+  // ── Сила сигнала для Action ──────────────────────────────
+  const isConfirmed=confirmed(stA)||confirmed(stE);
+  const isGrowing=growing(stA)||growing(stE);
+
+  // ── Critical cross усиливает Action ─────────────────────
+  const criticalCross=crosses&&crosses.length>0&&crosses.some(c=>
+    c.title.includes('Двойное давление')||c.title.includes('выгорания'));
+  // (criticalCross используется ниже при формировании решений)
+
+  // ── D5 подтверждённый — проблема хука ────────────────────
+  const streakD5A=getStreak(featA,'D5'); const streakD5E=getStreak(featE,'D5');
+  const streakD5=Math.max(streakD5A,streakD5E);
+  if(streakD5>=3)
+    return{type:'change',mainProblem,winner,crWarning,burnInfo,
+      title:'🎯 МЕНЯТЬ ХУК',
+      desc:'D5 подтверждён 3 дня. Хук не цепляет — первые 3 секунды не работают.',
+      decision:'⚡ ДЕЙСТВУЙ СЕГОДНЯ — меняй первые 3 секунды креатива'};
+  if(streakD5>=2)
+    return{type:'watch',mainProblem,winner,crWarning,burnInfo,
+      title:'🎯 ГОТОВЬ НОВЫЙ ХУК',
+      desc:'D5 второй день подряд. Хук слабеет — CTR падает, CPC растёт.',
+      decision:'🔧 ГОТОВЬСЯ — подготовь новый вариант первых 3 секунд'};
+
+  // Менять оба
+  const streakA=getStreak(featA,'D3'); const streakE=getStreak(featE,'D3');
+  if(streakA>=3&&streakE>=3&&dA.ctr<=-30&&mA.freq>=3.3)
+    return{type:'change',mainProblem,winner,crWarning,burnInfo,
+      title:'🔴 МЕНЯТЬ ОБА КРЕАТИВА',
+      desc:'D3 подтверждён у обоих 3+ дня. Аудитория выгорела полностью.',
+      decision:'⚡ ДЕЙСТВУЙ СЕГОДНЯ — меняй оба креатива немедленно'};
+
+  // Менять якорь
+  if(cA==='D3'&&(confirmed(stA)||(dA.ctr<=-30&&mA.freq>=3.0)))
+    return{type:'change',mainProblem,winner,crWarning,burnInfo,
+      title:'🟠 МЕНЯТЬ ЯКОРЬ (A)',
+      desc:'Якорь выгорел — CTR упал, частота высокая.',
+      decision:isConfirmed||criticalCross?'⚡ ДЕЙСТВУЙ СЕГОДНЯ — меняй якорь':isGrowing?'🔧 ГОТОВЬ ЗАМЕНУ — 2 дня сигнала':'👁 НАБЛЮДАЙ — первый день'};
+
+  // Менять расширитель
+  if(cE==='D3'&&cA!=='D3')
+    return{type:'change',mainProblem,winner,crWarning,burnInfo,
+      title:'🟡 МЕНЯТЬ РАСШИРИТЕЛЬ (E)',
+      desc:'Расширитель выгорел, якорь стабилен.',
+      decision:isConfirmed?'⚡ ДЕЙСТВУЙ СЕГОДНЯ — меняй расширитель':isGrowing?'🔧 ГОТОВЬ ЗАМЕНУ — 2 дня сигнала':'👁 НАБЛЮДАЙ 1-2 дня'};
+
+  // Масштабировать D1
+  if((cA==='D1'||cE==='D1')&&isConfirmed){
+    const leader=winner?winner.label:'лучший сегмент';
+    return{type:'scale',mainProblem,winner,crWarning,burnInfo,
+      title:'🚀 МАСШТАБИРОВАТЬ',
+      desc:`Зона силы подтверждена 3 дня. ${leader} даёт больше заявок.`,
+      decision:'⚡ ДЕЙСТВУЙ СЕГОДНЯ — увеличивай бюджет на 20-30%'};
+  }
+  if((cA==='D1'||cE==='D1')&&isGrowing)
+    return{type:'hold',mainProblem,winner,crWarning,burnInfo,
+      title:'🟢 ГОТОВЬСЯ К МАСШТАБИРОВАНИЮ',
+      desc:'Зона силы 2 дня. Ещё не подтверждена — жди третий день.',
+      decision:'🔧 ГОТОВЬСЯ — если завтра D1 снова, масштабируй'};
+  if(cA==='D1'||cE==='D1')
+    return{type:'hold',mainProblem,winner,crWarning,burnInfo,
+      title:'🟢 НЕ МЕНЯТЬ',
+      desc:'Зона силы — первый сигнал. Жди подтверждения.',
+      decision:'👁 НАБЛЮДАЙ — нужно 3 дня подряд'};
+
+  // D7 — показываем кто получил бюджет
+  if(cA==='D7'||cE==='D7'){
+    const budgetDir=mA.spendA>mE.spendE*1.3?'Бюджет ушёл в Якорь (A) — алгоритм усиливает его':
+                    mE.spendE>mA.spendA*1.3?'Бюджет ушёл в Расширитель (E) — алгоритм усиливает его':
+                    'Бюджет перераспределён между сегментами';
+    return{type:'hold',mainProblem,winner,crWarning,burnInfo,
+      title:'🟢 НЕ МЕНЯТЬ',
+      desc:budgetDir+'. Meta оптимизирует распределение автоматически.',
+      decision:'👁 НАБЛЮДАЙ — не трогай настройки 1-2 дня'};
+  }
+
+  // D8
+  if(cA==='D8'&&cE==='D8')
+    return{type:'hold',mainProblem,winner,crWarning,burnInfo,
+      title:'🟢 НЕ МЕНЯТЬ',
+      desc:'Данные в норме. Нет явных сигналов.',
+      decision:'👁 НАБЛЮДАЙ — жди данных'};
+
+  return{type:'watch',mainProblem,winner,crWarning,burnInfo,
+    title:'🟡 НАБЛЮДАТЬ',
+    desc:'Сигнал есть, но неоднозначный.',
+    decision:isConfirmed?'⚡ Подтверждён — прими решение сегодня':isGrowing?'🔧 ГОТОВЬСЯ — 2 дня сигнала':'👁 НАБЛЮДАЙ'};
+}
+
+function getStreak(feats,code){
+  let s=0;
+  for(let i=feats.length-1;i>=0;i--){if(feats[i].mainCode===code)s++;else break;}
+  return s;
+}
+
+// ── BURN INDEX — трекает рост 2-3 дня подряд ─────────────
+function calcBurn(feats){
+  if(!feats||!feats.length) return {score:0,forecast:null};
+  const f=feats[feats.length-1];
+  let s=_burnRaw(f);
+
+  // Тренд 3–5 дней: если риск растёт, прибавляем прогнозную часть
+  if(feats.length>=3){
+    const last3=feats.slice(-3).map(_burnRaw);
+    if(last3[2]>last3[1]&&last3[1]>last3[0]) s+=25;
+    else if(last3[2]>last3[1]) s+=12;
+  }
+  if(feats.length>=5){
+    const last5=feats.slice(-5);
+    const ctrDown=last5.filter(x=>x.hasAvg&&x.delta.ctr<=-10).length;
+    const cpcUp=last5.filter(x=>x.hasAvg&&x.delta.cpc>=10).length;
+    const smsDown=last5.filter(x=>x.hasAvg&&x.delta.sms<=-15).length;
+    if(ctrDown>=3&&cpcUp>=3) s+=15;
+    if(smsDown>=3) s+=12;
+  }
+
+  s=Math.min(100,Math.max(0,Math.round(s)));
+  let forecast=null;
+  if(s>=75) forecast='⚠️ Риск смерти креатива через 1–2 дня';
+  else if(s>=55) forecast='🟠 Без изменений может сгореть через 2–3 дня';
+  else if(s>=40) forecast='🟡 Негативный тренд — готовь замену';
+  return {score:s,forecast};
+}
+function _burnRaw(f){
+  if(!f||!f.hasAvg) return 0;
+  let s=0;
+  if(f.delta.ctr<=-30)s+=35;else if(f.delta.ctr<=-20)s+=24;else if(f.delta.ctr<=-10)s+=12;
+  if(f.delta.cpm>=30)s+=25;else if(f.delta.cpm>=20)s+=16;else if(f.delta.cpm>=10)s+=8;
+  if(f.m.freq>=3.3)s+=20;else if(f.m.freq>=2.8)s+=12;else if(f.m.freq>=2.5)s+=6;
+  if(f.m.sms>0&&f.delta.sms<=-30)s+=14;else if(f.m.sms>0&&f.delta.sms<=-20)s+=8;
+  if(f.m.ctr<0.3)s+=8;else if(f.m.ctr<0.8)s+=4;
+  return Math.min(100,Math.max(0,Math.round(s)));
+}
+
+// ── FORECAST ──────────────────────────────────────────────
+// ── FORECAST + ПАТТЕРН СЛОЙ ───────────────────────────────
+function calcFc(feats){
+  if(!feats||feats.length<2) return null;
+  const f=feats[feats.length-1];
+  const m=f.m;
+  const keys=['cpm','ctr','cr','cpc','sms'];
+  const hist=feats.slice(-5).filter(x=>x.hasAvg);
+  function trend(k){
+    if(hist.length<2) return 0;
+    let vals=hist.map(x=>x.m[k]||0);
+    let deltas=[];
+    for(let i=1;i<vals.length;i++){
+      if(vals[i-1]>0) deltas.push((vals[i]-vals[i-1])/vals[i-1]);
+    }
+    if(!deltas.length) return 0;
+    let t=deltas.reduce((a,b)=>a+b,0)/deltas.length;
+    // сглаживание, чтобы прогноз не улетал
+    if(Math.abs(t)>0.25) t*=0.45;
+    else if(Math.abs(t)>0.15) t*=0.65;
+    return t;
+  }
+  function fc(k){
+    const t=trend(k);
+    return [m[k]||0,1,2,3].map((v,i)=>i===0?(m[k]||0):Math.max(0,(m[k]||0)*Math.pow(1+t*0.75,i)));
+  }
+  let risk=null;
+  if(feats.length>=3){
+    const last3=feats.slice(-3);
+    const ctrDown=last3.filter(x=>x.hasAvg&&x.delta.ctr<=-10).length;
+    const cpcUp=last3.filter(x=>x.hasAvg&&x.delta.cpc>=10).length;
+    const cpmUp=last3.filter(x=>x.hasAvg&&x.delta.cpm>=10).length;
+    const crDown=last3.filter(x=>x.hasAvg&&x.delta.cr<=-15).length;
+    if(ctrDown>=3&&cpcUp>=3) risk={level:'🔴 КРИТИЧНО',msg:'CTR падает и CPC растёт 3 дня подряд — кампания умирает. Действуй сегодня.'};
+    else if(ctrDown>=2&&cpcUp>=2) risk={level:'🟠 ОПАСНО',msg:'CTR падает и CPC растёт 2 дня — тренд негативный. Готовься к изменениям.'};
+    else if(cpmUp>=3) risk={level:'🟡 ВНИМАНИЕ',msg:'CPM растёт 3 дня подряд — аукцион давит. Следи за охватом.'};
+    else if(crDown>=3) risk={level:'🟠 ОПАСНО',msg:'CR падает 3 дня подряд — воронка ломается. Проверь Messenger и оффер.'};
+  }
+  return{cpm:fc('cpm'),ctr:fc('ctr'),cr:fc('cr'),cpc:fc('cpc'),sms:fc('sms'),risk};
+}
+
+// ── ANALYZE ───────────────────────────────────────────────
+function analyze(){
+  const all=histDays.length>0?histDays:csvDays;
+  if(!all.length){setInfo('Нет данных!','err');return;}
+  lastF={
+    A:calcSigs(buildF(all,'A')),
+    E:calcSigs(buildF(all,'E')),
+    T:calcSigs(buildF(all,'T'))
+  };
+  document.getElementById('results').style.display='block';
+  renderTab(curTab);
+  document.getElementById('results').scrollIntoView({behavior:'smooth'});
+}
+
+// ── RENDER ────────────────────────────────────────────────
+function swTab(t,el){curTab=t;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderTab(t);}
+
+function renderTab(t){
+  if(!lastF[t]) return;
+  const fs=lastF[t];
+  const f=fs[fs.length-1];
+  renderLagers(f);
+  renderAvg(f);
+  renderBurn(calcBurn(fs));
+  renderSig(f.sig, f.auction);
+  const crosses=calcCross(f);renderCross(crosses);renderAction(calcAction(lastF.A,lastF.E,crosses));
+  renderFc(calcFc(fs),curFc);
+}
+
+function renderLagers(f){
+  const m=f.m; const d=f.delta; const ha=f.hasAvg;
+
+  // ДОСТАВКА
+  const dItems=[
+    {n:'ПОКАЗЫ',v:fi(m.impressions),d:ha?d.impressions:null},
+    {n:'ОХВАТ',v:fi(m.reach),d:ha?d.reach:null},
+    {n:'ЧАСТОТА',v:m.freq.toFixed(2),d:ha?d.freq:null,inv:1},
+    {n:'CPM',v:'€'+m.cpm.toFixed(2),d:ha?d.cpm:null,inv:1},
+    {n:'CTR ALL',v:m.ctr.toFixed(2)+'%',d:ha?d.ctr:null},
+    {n:'РАСХОД',v:'€'+m.spend.toFixed(2),d:null},
+  ];
+  document.getElementById('lager-d').innerHTML=
+    `<div style="font-family:var(--fm);font-size:10px;color:var(--text2);letter-spacing:2px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)">🚚 АЛГОРИТМ И АУКЦИОН</div>`+
+    `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">`+
+    dItems.map(it=>liHtml(it)).join('')+`</div>`;
+
+  // РЕАКЦИЯ
+  const rItems=[
+    {n:'КЛИКИ',v:fi(m.clicks),d:ha?d.clicks:null},
+    {n:'CTR LINK',v:m.ctr.toFixed(2)+'%',d:ha?d.ctr:null},
+    {n:'CPC',v:'€'+m.cpc.toFixed(2),d:ha?d.cpc:null,inv:1},
+    {n:'SMS',v:fi(m.sms),d:ha?d.sms:null},
+    {n:'CR',v:m.cr.toFixed(2)+'%',d:ha?d.cr:null},
+  ];
+  document.getElementById('lager-r').innerHTML=
+    `<div style="font-family:var(--fm);font-size:10px;color:var(--text2);letter-spacing:2px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)">💬 ИНТЕРЕС И КОНВЕРСИЯ</div>`+
+    `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">`+
+    rItems.map(it=>liHtml(it)).join('')+`</div>`;
+}
+
+function liHtml(it){
+  let dh='';
+  if(it.d!=null){
+    const up=it.inv?it.d<-10:it.d>10;
+    const dn=it.inv?it.d>10:it.d<-10;
+    const dc=up?'du':dn?'dd':'dn';
+    const ar=it.d>0?'▲':it.d<0?'▼':'—';
+    dh=`<div class="li-d ${dc}">${ar}${Math.abs(it.d).toFixed(1)}%</div>`;
+  }
+  return`<div class="lager-item"><div class="li-name">${it.n}</div><div class="li-val">${it.v}</div>${dh}</div>`;
+}
+
+function renderAvg(f){
+  if(!f.hasAvg){document.getElementById('avgt').innerHTML='<div style="padding:14px;font-family:var(--fm);font-size:12px;color:var(--text2)">Нужно минимум 4 дня для первых сигналов / 8 дней для базы 7</div>';return;}
+  const keys=[['CPM','cpm','€',2,1],['CTR','ctr','%',2,0],['CR','cr','%',2,0],['CPC','cpc','€',2,1],['ЧАСТОТА','freq','',2,1],['Клики','clicks','',0,0],['SMS','sms','',0,0]];
+  document.getElementById('avgt').innerHTML=
+    `<div class="avr avr-h"><div>МЕТРИКА</div><div>СЕГОДНЯ</div><div>${f.baseMode==='avg3_start'?'AVG3':'BASE7'}</div></div>`+
+    keys.map(([lb,k,sf,dc,inv])=>{
+      const tv=f.m[k],av=f.avg[k],dv=f.delta[k];
+      const up=inv?dv<-10:dv>10;const dn=inv?dv>10:dv<-10;
+      const cls=up?'du':dn?'dd':'dn';
+      const fmt=v=>(sf==='€'?'€':'')+(dc?v.toFixed(dc):fi(v))+(sf==='%'?'%':'');
+      return`<div class="avr"><div style="color:var(--text2)">${lb}</div><div class="${cls}">${fmt(tv)}</div><div style="color:var(--text2)">${fmt(av)}</div></div>`;
+    }).join('');
+}
+
+function renderBurn(burn){
+  const score=Number((burn&&burn.score!==undefined)?burn.score:burn)||0;
+  const forecast=(burn&&burn.forecast)||null;
+  setTimeout(()=>document.getElementById('bfill').style.width=score+'%',50);
+  document.getElementById('bpct').textContent=score+'%';
+  let st,cl,hint;
+  if(score<30){st='СВЕЖИЙ';cl='b-ok';hint='Частота нормальная, CTR держится. Продолжай откручивать.';}
+  else if(score<50){st='ВНИМАНИЕ';cl='b-w';hint='Начальные признаки усталости. Готовь запасной вариант.';}
+  else if(score<75){st='УСТАЛ';cl='b-w';hint='Частота растёт, CTR падает. Запускай A/B тест.';}
+  else{st='СГОРЕЛ';cl='b-c';hint='⚠️ Аудитория выгорела. Срочно меняй креатив!';}
+  document.getElementById('bst').textContent=st;
+  document.getElementById('bst').className='burn-st '+cl;
+  const hintEl=document.getElementById('bhint');
+  hintEl.textContent=hint;
+  // Прогноз смерти
+  let fcEl=document.getElementById('bforecast');
+  if(!fcEl){fcEl=document.createElement('div');fcEl.id='bforecast';fcEl.style.cssText='margin-top:6px;font-family:var(--fm);font-size:11px;letter-spacing:0.5px';hintEl.parentNode.appendChild(fcEl);}
+  fcEl.textContent=forecast||'';
+  fcEl.style.color=score>=70?'#ff3c5f':score>=55?'#ffb800':'#888';
+}
+
+function renderSig(sig,auction){
+  const info=SI[sig.code];
+  const scl=sig.status.includes('Подтверждён')?'ss-conf':sig.status.includes('Усиливается')?'ss-grow':sig.status.includes('Восстановлен')?'ss-rec':'ss-sig';
+  const dots=[1,2,3].map(n=>`<div class="dot ${n<=sig.str?'on':''}"></div>`).join('');
+  // Аукционный блок — только для D2
+  let auctionHtml='';
+  if(sig.code==='D2'&&auction){
+    auctionHtml=`<div style="margin-top:10px;background:var(--surface2);border-radius:8px;padding:10px 12px;border-left:3px solid ${auction.color}">
+      <div style="font-family:var(--fm);font-size:11px;color:${auction.color};letter-spacing:1px;margin-bottom:4px">${auction.label}</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:4px">${auction.desc}</div>
+      <div style="font-family:var(--fm);font-size:10px;color:${auction.color}">→ ${auction.action}</div>
+    </div>`;
+  }
+  document.getElementById('siglist').innerHTML=
+    `<div class="sig" style="border-left:3px solid ${info.color}">
+      <div class="sig-head">
+        <div class="scode" style="color:${info.color}">${sig.code}</div>
+        <div class="sinfo">
+          <div class="sname" style="color:${info.color}">${info.name}</div>
+          <div class="sdesc">${info.desc}</div>
+        </div>
+      </div>
+      ${auctionHtml}
+      <div class="sig-meta">
+        <div class="sconf">Confidence: <span>${sig.conf}%</span></div>
+        <div class="sstatus ${scl}">${sig.status}</div>
+      </div>
+      <div class="sextras" style="margin-top:8px">
+        <span class="sextra" style="color:${info.color};border-color:${info.color}40">→ ${info.action}</span>
+      </div>
+      <div class="sdots">${dots}</div>
+    </div>`;
+}
+
+function renderCross(crosses){
+  const el=document.getElementById('crosslist');
+  if(!crosses.length){el.innerHTML='<div style="font-family:var(--fm);font-size:12px;color:var(--text2);padding:6px 0">Пересечений не обнаружено.</div>';return;}
+  el.innerHTML=crosses.map(c=>`<div class="cross-sig"><div class="cross-title">${c.title}</div><div class="cross-desc">${c.desc}</div></div>`).join('');
+}
+
+function renderAction(act){
+  const el=document.getElementById('actioncard');
+  if(!act){el.innerHTML='';return;}
+  const cls=act.type==='change'?'change':act.type==='scale'?'scale':act.type==='hold'?'hold':'watch';
+  const tc=act.type==='change'?'var(--accent2)':act.type==='scale'?'#39ff6e':act.type==='hold'?'var(--accent3)':'var(--warn)';
+  // Главная проблема дня
+  const probHtml=act.mainProblem?`<div style="margin-bottom:10px;padding:6px 10px;background:var(--surface2);border-radius:6px;font-family:var(--fm);font-size:11px;color:var(--text2);letter-spacing:0.5px">${act.mainProblem}</div>`:'';
+  // Победитель A/E
+  const winHtml=act.winner&&act.winner.seg!=='='&&act.winner.seg!=='?'
+    ?`<div style="margin-top:8px;padding:6px 10px;background:#39ff6e18;border-radius:6px;font-family:var(--fm);font-size:11px;color:#39ff6e">🏆 Победитель: ${act.winner.label} · ${act.winner.reason}</div>`
+    :act.winner&&act.winner.seg==='?'
+    ?`<div style="margin-top:8px;padding:6px 10px;background:#8888a018;border-radius:6px;font-family:var(--fm);font-size:11px;color:#8888a0">📊 ${act.winner.reason}</div>`
+    :'';
+  // Cost per SMS предупреждение
+  const costWarnHtml=act.winner&&act.winner.costWarn
+    ?`<div style="margin-top:5px;padding:5px 10px;background:#ffb80018;border-radius:6px;font-family:var(--fm);font-size:10px;color:#ffb800">⚠️ ${act.winner.costWarn}</div>`:'';
+  const decisionHtml=act.decision?`<div style="margin-top:10px;padding:8px 12px;background:${tc}18;border-radius:8px;border-left:3px solid ${tc};font-family:var(--fm);font-size:12px;color:${tc};letter-spacing:0.5px">${act.decision}</div>`:'';
+  const crWarnHtml=act.crWarning?`<div style="margin-top:8px;padding:8px 12px;background:#ffb80018;border-radius:8px;border-left:3px solid #ffb800;font-size:12px;color:#ffb800">${act.crWarning}</div>`:'';
+  // Burn A/E
+  const burnHtml=act.burnInfo?`<div style="margin-top:8px;padding:5px 10px;background:var(--surface2);border-radius:6px;font-family:var(--fm);font-size:10px;color:var(--text2)">${act.burnInfo}</div>`:'';
+  el.innerHTML=`<div class="action-card ${cls}">${probHtml}<div class="action-title" style="color:${tc}">${act.title}</div><div class="action-desc">${act.desc}</div>${decisionHtml}${winHtml}${costWarnHtml}${crWarnHtml}${burnHtml}</div>`;
+}
+
+function swFc(m,el){curFc=m;document.querySelectorAll('.fc-tab').forEach(b=>b.classList.remove('active'));el.classList.add('active');if(lastF[curTab])renderFc(calcFc(lastF[curTab]),m);}
+function renderFc(fc,m){
+  if(!fc){document.getElementById('fcdays').innerHTML='<div style="color:var(--text2);font-family:var(--fm);font-size:12px;padding:10px">Нужно минимум 2 дня</div>';return;}
+  const vs=fc[m];const lbs=['Сегодня','+1 день','+2 дня','+3 дня'];
+  const isc=m==='cpm'||m==='cpc';
+  const fmt=v=>isc?'€'+v.toFixed(2):m==='sms'?fi(v):v.toFixed(2)+'%';
+  // Паттерн-предупреждение
+  const riskHtml=fc.risk?`<div style="margin-bottom:10px;padding:8px 12px;background:#ff3c5f18;border-radius:8px;border-left:3px solid #ff3c5f;font-family:var(--fm);font-size:11px;color:#ff3c5f">
+    <div style="margin-bottom:3px;font-size:12px">${fc.risk.level}</div>${fc.risk.msg}</div>`:'';
+  document.getElementById('fcdays').innerHTML=riskHtml+lbs.map((lb,i)=>{
+    let ch='';
+    if(i>0){const dv=pct(vs[i],vs[0]);const up=isc?dv<-5:dv>5;const dn=isc?dv>5:dv<-5;const cls=up?'du':dn?'dd':'dn';const ar=dv>0?'▲':dv<0?'▼':'—';ch=`<div class="fc-dc ${cls}">${ar}${Math.abs(dv).toFixed(1)}%</div>`;}
+    return`<div class="fc-day"><div class="fc-dl">${lb}</div><div class="fc-dv" style="color:${i===0?'var(--text)':'var(--text2)'}">${fmt(vs[i])}</div>${ch}</div>`;
+  }).join('');
+}
+
+// ── HISTORY ───────────────────────────────────────────────
+function swMem(type,el){curMem=type;document.querySelectorAll('.mem-tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderHist();}
+
+function renderHist(){
+  const root=document.getElementById('histlist');
+  if(!histDays.length){root.innerHTML='<div style="font-family:var(--fm);font-size:13px;color:var(--text2);padding:10px 0">История пуста. Импортируй CSV.</div>';return;}
+  // Считаем сигналы ВСЕГДА по полной истории (до 90 дней)
+  const allFs=calcSigs(buildF([...histDays],'T'));
+  // Показываем только нужный период (короткая/длинная — режим отображения)
+  const showFs=curMem==='short'?allFs.slice(-7):allFs;
+  root.innerHTML=[...showFs].reverse().map(f=>{
+    const c=f.sig.code;const info=SI[c];
+    const hcl=c==='D1'?'hc1':(c==='D3'||c==='D6')?'hc3':'hcd';
+    const smsA=tn((smsMap[f.date]||{}).A)||(f.A?tn(f.A.sms):0);
+    const smsE=tn((smsMap[f.date]||{}).E)||(f.E?tn(f.E.sms):0);
+    const auctHtml=c==='D2'&&f.auction?`<div style="font-family:var(--fm);font-size:10px;color:${f.auction.color};margin-top:4px">${f.auction.label} → ${f.auction.action}</div>`:'';
+    return`<div class="hcard">
+      <div class="hhead"><div class="hdate">${fmtD(f.date)}</div><button class="hdel" onclick="delDay('${f.date}')">✕</button></div>
+      <div class="hdiag"><div class="hcode ${hcl}">${c}</div><div class="hact">${info.action}</div><span style="font-family:var(--fm);font-size:11px;color:var(--text2)">${f.sig.conf}%</span></div>
+      <div style="font-family:var(--fm);font-size:12px;color:var(--text2);margin-bottom:4px">${info.name} • ${f.sig.status}</div>
+      ${auctHtml}
+      <div class="sms-row">
+        <div class="sms-box" onclick="openSms('${f.date}','A')"><div class="sms-box-label">⚓ SMS ЯКОРЬ</div><div class="sms-box-val">${smsA}</div></div>
+        <div class="sms-box" onclick="openSms('${f.date}','E')"><div class="sms-box-label">🚀 SMS РАСШИР.</div><div class="sms-box-val">${smsE}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── CONFIRM MODAL ─────────────────────────────────────────
+let confirmCb=null;
+function showConfirm(msg,cb){confirmCb=cb;document.getElementById('confirm-msg').textContent=msg;document.getElementById('cbg').classList.add('open');document.getElementById('confirm-ok').onclick=()=>{closeConfirm();if(confirmCb)confirmCb();};}
+function closeConfirm(){document.getElementById('cbg').classList.remove('open');confirmCb=null;}
+
+// ── SMS MODAL ─────────────────────────────────────────────
+function openSms(date,ad){smsCtx={date,ad};document.getElementById('mtitle').textContent=`${fmtD(date)} • ${ad==='A'?'⚓ Якорь':'🚀 Расш.'}`;document.getElementById('minp').value=tn((smsMap[date]||{})[ad]);document.getElementById('mbg').classList.add('open');setTimeout(()=>document.getElementById('minp').focus(),80);}
+function closeM(){document.getElementById('mbg').classList.remove('open');smsCtx=null;}
+function adj(n){const inp=document.getElementById('minp');inp.value=Math.max(0,(parseInt(inp.value)||0)+n);}
+function saveM(){if(!smsCtx)return;const v=Math.max(0,parseInt(document.getElementById('minp').value)||0);smsMap[smsCtx.date]=smsMap[smsCtx.date]||{A:0,E:0};smsMap[smsCtx.date][smsCtx.ad]=v;sj(LS_S,smsMap);[csvDays,histDays].forEach(arr=>arr.forEach(d=>{if(d.date===smsCtx.date)d[smsCtx.ad].sms=v;}));closeM();renderHist();}
+
+// ── UTILS ─────────────────────────────────────────────────
+function lj(k,fb){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(fb));}catch{return fb;}}
+function sj(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+function fi(n){return Math.round(tn(n)).toLocaleString('ru-RU');}
+function fmtD(s){const p=String(s).split('-');if(p.length!==3)return s;try{return new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString('ru-RU',{day:'numeric',month:'short'});}catch{return s;}}
+function setInfo(msg,t){document.getElementById('info-bar').innerHTML=`<span class="${t||''}">${msg}</span>`;}
+function updCnt(){document.getElementById('hcnt').textContent=histDays.length;document.getElementById('ccnt').textContent=csvDays.length;document.getElementById('btn-analyze').disabled=histDays.length===0&&csvDays.length===0;}
+</script>
+</body>
+</html>
